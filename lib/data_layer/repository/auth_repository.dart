@@ -2,24 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:mafrashi/data_layer/remote_data/auth/auth_data_interface.dart';
 import 'package:mafrashi/data_layer/repository/repository.dart';
 import 'package:mafrashi/data_layer/shared_prefrences/user_manager_interface.dart';
-import 'package:mafrashi/model/user.dart';
 
 class AuthRepositoryImp with ChangeNotifier implements AuthRepository {
   AuthApi _remoteDataSource;
   UserManager _userManager;
+
   AuthRepositoryImp(this._userManager, this._remoteDataSource);
 
   @override
   Future<bool> login(String email, String password) async {
-    User user = await _remoteDataSource.login(email, password);
-    _userManager.saveUserData(user);
+    String token = await _remoteDataSource.login(email, password);
+    await _userManager.saveToken(token);
     return true;
   }
 
   @override
-  Future<bool> logout() {
-    // TODO: implement logout
-    return null;
+  Future<bool> logout() async {
+    String email = await _userManager.getUserEmail();
+    bool result = await _remoteDataSource.logout(email);
+    if (result) _userManager.deleteUserData();
+    return result;
   }
 
   @override

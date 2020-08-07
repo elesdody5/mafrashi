@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mafrashi/widgets/authenticated_widget.dart';
 import 'package:mafrashi/widgets/bottom_navigation.dart';
+import 'package:mafrashi/widgets/categories_grid.dart';
+import 'package:mafrashi/widgets/error_widget.dart';
 import 'package:provider/provider.dart';
 
 import './cart_screen.dart';
@@ -18,15 +21,7 @@ class ProductsOverviewScreen extends StatefulWidget {
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _isInit = true;
   var _isLoading = false;
-
-  @override
-  void initState() {
-    // Provider.of<Products>(context).fetchAndSetProducts(); // WON'T WORK!
-    // Future.delayed(Duration.zero).then((_) {
-    //   Provider.of<Products>(context).fetchAndSetProducts();
-    // });
-    super.initState();
-  }
+  var _showError = false;
 
   @override
   void didChangeDependencies() {
@@ -34,44 +29,63 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
       setState(() {
         _isLoading = true;
       });
-      Provider.of<ProductsProvider>(context).fetchProducts().then((_) {
-        setState(() {
-          _isLoading = false;
-        });
+
+      _fetchData();
+      _isInit = false;
+      super.didChangeDependencies();
+    }
+  }
+
+  void _fetchData() async {
+    try {
+      await Provider.of<ProductsProvider>(context).fetchCategories();
+      await Provider.of<ProductsProvider>(context).fetchProducts();
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("products_overvie error$e");
+      setState(() {
+        _showError = true;
+        _isLoading = false;
       });
     }
-    _isInit = false;
-    super.didChangeDependencies();
+  }
+
+  Widget _buildBody() {
+    return _isLoading
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : ListView(children: [
+            Text("All Categories:"),
+            CategoriesGrid(),
+            Text("All Products"),
+            ProductsGrid()
+          ]);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('MyShop'),
-        actions: <Widget>[
-          Consumer<Cart>(
-            builder: (_, cart, ch) => Badge(
-              child: ch,
-              value: cart.itemCount.toString(),
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.shopping_cart,
+        appBar: AppBar(
+          title: Text('Mafrashi'),
+          actions: <Widget>[
+            Consumer<Cart>(
+              builder: (_, cart, ch) => Badge(
+                child: ch,
+                value: cart.itemCount.toString(),
               ),
-              onPressed: () {
-                Navigator.of(context).pushNamed(CartScreen.routeName);
-              },
+              child: AuthenticatedWidget(
+                  child: Icon(
+                    Icons.shopping_cart,
+                  ),
+                  onTap: () =>
+                      Navigator.of(context).pushNamed(CartScreen.routeName)),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: ButtomNavigaton(),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : ProductsGrid(),
-    );
+          ],
+        ),
+        bottomNavigationBar: ButtomNavigaton(),
+        body: _showError ? ErrorImage() : _buildBody());
   }
 }

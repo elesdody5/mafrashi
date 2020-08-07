@@ -1,25 +1,36 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mafrashi/data_layer/remote_data/network.dart';
 import 'package:mafrashi/data_layer/remote_data/network_interface.dart';
 import 'package:mafrashi/data_layer/repository/products_repository.dart';
+import 'package:mafrashi/data_layer/repository/repository.dart';
 import 'package:mafrashi/data_layer/shared_prefrences/user_manager_interface.dart';
+import 'package:mafrashi/model/category.dart';
 import 'package:mafrashi/model/product.dart';
-import 'package:mafrashi/model/user.dart';
 
 import '../auth/fake_user_manger.dart';
-import 'fake_remote_data.dart';
 
-List<Product> _products = [Product(id: 1), Product(id: 2)];
-User user = User(id: 1);
-UserManager fakeUserManger = FakeUserManager(user);
-RemoteDataSource fakeRemoteDataSource = FakeRemoteData(_products);
-ProductRepository productRepository =
-    ProductRepository(fakeRemoteDataSource, fakeUserManger);
+String _email = "eles@ele.com";
+String _token =
+    "eyJpdiI6IlhwTlVFbW5pcjNYUnE3MzJrcDdTWEE9PSIsInZhbHVlIjoiRDhlZm1PR1h1anNXeTFUOWJuNWdQUjN3dW16emhxNHhYbVFlSFh3a29jS0M0ZnR1aHNmalNXRHFzM0RYbUFSdyIsIm1hYyI6Ijg5ZWRjNzAyOWFmMmUxN2ZlNzVlNzc0MjdmNzBiZDA5NjIxMWYxNGJmNmE4ZWY1NzA0ZGMzNThhMjdkNzJhNzkifQ";
+UserManager fakeUserManger = FakeUserManager(_email, _token);
+RemoteDataSource _remoteDataSource = Network();
+Repository productRepository =
+    ProductRepository(_remoteDataSource, fakeUserManger);
 
 void main() {
-  test('fetch user data and get list of 2 products', () async {
+  test('fetch user data and get list of  products', () async {
     List<Product> productList = await productRepository.fetchProducts();
-    expect(2, productList.length);
-    expect(1, productList[0].id);
-    expect(2, productList[1].id);
+
+    expect(productList.isNotEmpty, true);
+  });
+  test('fetch category expected not empty list', () async {
+    List<Category> categoryList = await productRepository.fetchCategory();
+
+    expect(categoryList.isNotEmpty, true);
+  });
+
+  test("add product to wish list ", () async {
+    bool result = await productRepository.addToWishList(5);
+    expect(result, true);
   });
 }

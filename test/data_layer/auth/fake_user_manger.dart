@@ -1,21 +1,43 @@
 import 'package:mafrashi/data_layer/shared_prefrences/user_manager_interface.dart';
-import 'package:mafrashi/model/user.dart';
 
 class FakeUserManager implements UserManager {
-  User _user;
-  FakeUserManager(this._user);
+  String _email;
+  String _token;
+  String _password;
+  FakeUserManager(this._email, this._token);
+
+  @override
+  Future<String> getToken() async {
+    // TODO: implement getToken
+    return _token;
+  }
+
+  @override
+  Future<String> getUserEmail() async {
+    // TODO: implement getUserEmail
+    return _token;
+  }
+
+  @override
+  Future<void> saveToken(String token) async {
+    _token = await token;
+  }
+
+  @override
+  Future<void> saveUserData(String email, String password) async {
+    _email = email;
+    _password = password;
+  }
+
   @override
   Future<void> deleteUserData() async {
-    _user = null;
+    _email = null;
+    _token = null;
   }
 
   @override
-  Future<User> getUserData() async {
-    return _user;
-  }
-
-  @override
-  Future<void> saveUserData(User user) async {
-    _user = user;
+  Future<String> getUserPassword() async {
+    // TODO: implement getUserPassword
+    return _password;
   }
 }

@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:mafrashi/providers/products.dart';
+import 'package:mafrashi/widgets/category_item.dart';
 import 'package:provider/provider.dart';
 
-import './product_item.dart';
-import '../providers/products.dart';
-
-class ProductsGrid extends StatelessWidget {
+class CategoriesGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<ProductsProvider>(context);
-    final products = productsData.items;
+    final categories = productsData.categories;
     return GridView.builder(
-      physics: const NeverScrollableScrollPhysics(),
+      scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.all(10.0),
-      itemCount: products.length,
-      itemBuilder: (ctx, i) => ProductItem(products[i]),
+      itemCount: categories.length,
+      itemBuilder: (ctx, i) => CategoryItem(categories[i]),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 3 / 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+        crossAxisSpacing: 5,
+        mainAxisSpacing: 5,
       ),
     );
   }

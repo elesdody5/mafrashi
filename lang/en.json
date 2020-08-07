@@ -1,0 +1,15 @@
+{
+  "log_in": "Login",
+  "english": "English",
+  "arabic": "Arabic",
+  "lan": "EN",
+  "choose_language": "Choose Language",
+  "enter_password_phone": "Please Enter Phone and Password",
+  "register_new_account": "Register a new account",
+  "forget_password": "Forget Password",
+  "enter_phone": "Enter Phone Number",
+  "please_enter_phone": "Please Enter Phone Number",
+  "please_enter_password": "Please Enter Password",
+  "enter_password": "Enter Password",
+  "edit_account": "Edit Account"
+}

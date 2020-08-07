@@ -6,21 +6,18 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mafrashi/data_layer/remote_data/auth/auth_data_interface.dart';
+import 'package:mafrashi/data_layer/remote_data/auth/auth_api_data.dart';
 import 'package:mafrashi/data_layer/repository/auth_repository.dart';
 import 'package:mafrashi/data_layer/repository/repository.dart';
 import 'package:mafrashi/data_layer/shared_prefrences/user_manager_interface.dart';
-import 'package:mafrashi/model/user.dart';
 
-import 'fake_remote_data.dart';
 import 'fake_user_manger.dart';
 
-List<User> _users = [User(email: "elesdody"), User(email: "ahmed")];
-User user = User();
-UserManager fakeUserManger = FakeUserManager(user);
-AuthApi fakeRemoteDataSource = FakeRemoteDataSource(_users);
-AuthRepository authRepository =
-    AuthRepositoryImp(fakeUserManger, fakeRemoteDataSource);
+String _email = "eles@ele.com";
+String _token;
+
+UserManager fakeUserManger = FakeUserManager(_email, _token);
+AuthRepository authRepository = AuthRepositoryImp(fakeUserManger, AuthApiImp());
 
 void main() {
   test('signUp new  user return true', () async {
@@ -37,7 +34,13 @@ void main() {
   });
 
   test('login exists  user return true', () async {
-    expect(await authRepository.login("elesdody", "pass"), true);
+    expect(await authRepository.login("eles@ele.com", "password"), true);
+  });
+  test('login user and return expected token', () async {
+    await authRepository.login("eles@ele.com", "password");
+
+    String token = await fakeUserManger.getToken();
+    expect(token.isNotEmpty, true);
   });
   test('login  user throws exception if not found', () {
     expect(authRepository.login("mohamed", "pass"), throwsA(Exception));

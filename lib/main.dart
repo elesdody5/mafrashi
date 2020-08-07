@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mafrashi/data_layer/remote_data/auth/auth_api_data.dart';
 import 'package:mafrashi/data_layer/remote_data/auth/auth_data_interface.dart';
 import 'package:mafrashi/data_layer/remote_data/network.dart';
@@ -10,6 +11,7 @@ import 'package:mafrashi/data_layer/shared_prefrences/user_manager_interface.dar
 import 'package:mafrashi/providers/products.dart';
 import 'package:mafrashi/screens/auth_screen.dart';
 import 'package:mafrashi/screens/products_overview_screen.dart';
+import 'package:mafrashi/screens/splash_screen.dart';
 import 'package:mafrashi/screens/welcom_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -19,10 +21,28 @@ import './providers/cart.dart';
 import './screens/cart_screen.dart';
 import './screens/orders_screen.dart';
 import './screens/product_detail_screen.dart';
+import 'language/app_loacl.dart';
+import 'providers/change_language_provider.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  // Always call this if the main method is asynchronous
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final AppLanguage appLanguage = AppLanguage();
+  await appLanguage.fetchLocale();
+
+  runApp(ChangeNotifierProvider<AppLanguage>.value(
+      value: appLanguage,
+      child: MyApp(
+        appLanguage: appLanguage,
+      )));
+}
 
 class MyApp extends StatelessWidget {
+  final AppLanguage appLanguage;
+
+  MyApp({this.appLanguage});
+
   final UserManager _userManager = UserManagerImp();
   final RemoteDataSource _remoteDataSource = Network();
   final AuthApi _authApi = AuthApiImp();
@@ -54,28 +74,53 @@ class MyApp extends StatelessWidget {
 //          ),
 //        ),
       ],
-      child: MaterialApp(
-        title: 'MyShop',
-        theme: ThemeData(
-          primaryColor: Color(0xFFA8A73A),
-          accentColor: Colors.deepOrange,
-          fontFamily: 'Lato',
-          pageTransitionsTheme: PageTransitionsTheme(
-            builders: {
-              TargetPlatform.android: CustomPageTransitionBuilder(),
-              TargetPlatform.iOS: CustomPageTransitionBuilder(),
-            },
+      child: Consumer<AppLanguage>(builder: (context, model, child) {
+        return MaterialApp(
+          title: 'Mafrishi',
+          theme: ThemeData(
+            primaryColor: Color(0xFFA8A73A),
+            accentColor: Colors.deepOrange,
+            fontFamily: 'Lato',
+            pageTransitionsTheme: PageTransitionsTheme(
+              builders: {
+                TargetPlatform.android: CustomPageTransitionBuilder(),
+                TargetPlatform.iOS: CustomPageTransitionBuilder(),
+              },
+            ),
           ),
-        ),
-        home: WelcomePage(),
-        routes: {
-          ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
-          CartScreen.routeName: (ctx) => CartScreen(),
-          OrdersScreen.routeName: (ctx) => OrdersScreen(),
-          AuthScreen.routeName: (ctx) => AuthScreen(),
-          ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen()
-        },
-      ),
+          locale: model.appLocal,
+          debugShowCheckedModeBanner: false,
+          //locale: model.appLocal,
+          supportedLocales: [
+            Locale('ar', ''),
+            Locale('en', 'US'),
+          ],
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          home: FutureBuilder(
+              future: Provider.of<Auth>(context, listen: false).tryAutoLogin(),
+              builder: (ctx, authResultSnapshot) {
+                final auth = Provider.of<Auth>(context, listen: false);
+                if (authResultSnapshot.connectionState ==
+                    ConnectionState.waiting)
+                  return SplashScreen();
+                else if (auth.isAuthenticated)
+                  return ProductsOverviewScreen();
+                else
+                  return WelcomePage();
+              }),
+          routes: {
+            ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+            CartScreen.routeName: (ctx) => CartScreen(),
+            OrdersScreen.routeName: (ctx) => OrdersScreen(),
+            AuthScreen.routeName: (ctx) => AuthScreen(),
+            ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen()
+          },
+        );
+      }),
     );
   }
 }

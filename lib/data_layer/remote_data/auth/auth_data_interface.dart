@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:mafrashi/model/user.dart';
 
 abstract class AuthApi {
-  Future<User> login(String email, String password);
+  Future<String> login(String email, String password);
 
-  Future<bool> logout();
+  Future<bool> logout(String email);
 
   Future<bool> signUp(
       {@required String firstName,
