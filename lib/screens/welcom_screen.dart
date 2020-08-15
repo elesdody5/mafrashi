@@ -1,8 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:mafrashi/language/app_loacl.dart';
+import 'package:mafrashi/providers/change_language_provider.dart';
 import 'package:mafrashi/screens/auth_screen.dart';
-import 'package:mafrashi/screens/products_overview_screen.dart';
+import 'package:mafrashi/screens/tabs_screen.dart';
+import 'package:mafrashi/widgets/dialog_style.dart';
+import 'package:provider/provider.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class WelcomePage extends StatelessWidget {
+  static const routeName = '/welcome';
+
+  void _showDialogChangeLanguage(BuildContext context) {
+    Alert(
+      context: context,
+      style: alertStyle,
+      title: AppLocalizations.of(context).translate('choose_language'),
+      desc: "",
+      buttons: [
+        DialogButton(
+          child: Text(
+            AppLocalizations.of(context).translate('english'),
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () {
+            Provider.of<AppLanguage>(context, listen: false)
+                .changeLanguage(Locale("en"));
+            Navigator.pop(context);
+            Navigator.pushReplacementNamed(context, WelcomePage.routeName);
+          },
+        ),
+        DialogButton(
+          child: Text(
+            AppLocalizations.of(context).translate('arabic'),
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () {
+            Provider.of<AppLanguage>(context, listen: false)
+                .changeLanguage(Locale("ar"));
+
+            Navigator.pop(context);
+            Navigator.pushReplacementNamed(context, WelcomePage.routeName);
+          },
+        )
+      ],
+    ).show();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,7 +57,7 @@ class WelcomePage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'Welcome!',
+                  AppLocalizations.of(context).translate('welcome'),
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
                 Container(
@@ -26,7 +69,8 @@ class WelcomePage extends StatelessWidget {
                   ),
                   width: 250,
                   child: FlatButton(
-                    child: Text('Sign In',
+                    child: Text(
+                        AppLocalizations.of(context).translate('sign_up'),
                         style: TextStyle(fontSize: 20, color: Colors.white)),
                     onPressed: () {
                       Navigator.pushReplacementNamed(
@@ -44,13 +88,13 @@ class WelcomePage extends StatelessWidget {
                   ),
                   width: 250,
                   child: FlatButton(
-                    child: Text('Skip',
+                    child: Text(AppLocalizations.of(context).translate('skip'),
                         style: TextStyle(
                             fontSize: 20,
                             color: Theme.of(context).primaryColor)),
                     onPressed: () {
                       Navigator.pushReplacementNamed(
-                          context, ProductsOverviewScreen.routeName);
+                          context, TabsScreen.routeName);
                     },
                   ),
                 ),
@@ -59,7 +103,7 @@ class WelcomePage extends StatelessWidget {
                   // crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     Text(
-                      'Language : ',
+                      AppLocalizations.of(context).translate('language'),
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.normal),
                     ),
@@ -67,9 +111,9 @@ class WelcomePage extends StatelessWidget {
                       width: 8,
                     ),
                     FlatButton(
-                      onPressed: () {},
+                      onPressed: () => _showDialogChangeLanguage(context),
                       child: Text(
-                        'English',
+                        AppLocalizations.of(context).translate('lan'),
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),

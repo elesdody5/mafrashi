@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mafrashi/language/app_loacl.dart';
+import 'package:mafrashi/providers/category_provider.dart';
 import 'package:mafrashi/widgets/authenticated_widget.dart';
-import 'package:mafrashi/widgets/bottom_navigation.dart';
 import 'package:mafrashi/widgets/categories_grid.dart';
 import 'package:mafrashi/widgets/error_widget.dart';
 import 'package:provider/provider.dart';
@@ -38,8 +40,12 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   void _fetchData() async {
     try {
-      await Provider.of<ProductsProvider>(context).fetchCategories();
-      await Provider.of<ProductsProvider>(context).fetchProducts();
+      await Provider.of<ProductsProvider>(context, listen: false)
+          .fetchWishList();
+      await Provider.of<CategoryProvider>(context, listen: false)
+          .fetchCategories();
+      await Provider.of<ProductsProvider>(context, listen: false)
+          .fetchProducts();
       setState(() {
         _isLoading = false;
       });
@@ -57,19 +63,36 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ? Center(
             child: CircularProgressIndicator(),
           )
-        : ListView(children: [
-            Text("All Categories:"),
-            CategoriesGrid(),
-            Text("All Products"),
-            ProductsGrid()
-          ]);
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    AppLocalizations.of(context).translate('categories'),
+                    style: Theme.of(context).textTheme.title,
+                  ),
+                ),
+                Flexible(flex: 1, child: CategoriesGrid()),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                      AppLocalizations.of(context).translate('all_products'),
+                      style: Theme.of(context).textTheme.title),
+                ),
+                Flexible(flex: 4, child: ProductsGrid())
+              ]);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Mafrashi'),
+          title: Text(
+            AppLocalizations.of(context).translate('app_name'),
+            style: TextStyle(color: Colors.white),
+          ),
           actions: <Widget>[
             Consumer<Cart>(
               builder: (_, cart, ch) => Badge(
@@ -79,13 +102,13 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
               child: AuthenticatedWidget(
                   child: Icon(
                     Icons.shopping_cart,
+                    color: Colors.white,
                   ),
                   onTap: () =>
                       Navigator.of(context).pushNamed(CartScreen.routeName)),
             ),
           ],
         ),
-        bottomNavigationBar: ButtomNavigaton(),
         body: _showError ? ErrorImage() : _buildBody());
   }
 }

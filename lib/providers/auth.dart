@@ -1,17 +1,19 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 import 'package:mafrashi/data_layer/repository/repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mafrashi/model/user.dart';
 
 class Auth with ChangeNotifier {
   String _token;
   bool _isAuthenticated = false;
   AuthRepository _authRepository;
+  User _user;
 
   Auth(this._authRepository);
+
   get isAuthenticated => _isAuthenticated;
+
   Future<bool> signUp(
       String firstName,
       String lastName,
@@ -39,18 +41,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<bool> tryAutoLogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('userData')) {
-      return false;
-    }
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
-    final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
-
-    if (expiryDate.isBefore(DateTime.now())) {
-      return false;
-    }
-    notifyListeners();
+    _authRepository.tryAutoLogin();
 
     return true;
   }
@@ -58,5 +49,9 @@ class Auth with ChangeNotifier {
   Future<void> logout() async {
     await _authRepository.logout();
     _isAuthenticated = false;
+  }
+
+  Future<String> forgetPassword(String email) async {
+    return await _authRepository.forgetPassword(email);
   }
 }

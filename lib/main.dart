@@ -2,16 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mafrashi/data_layer/remote_data/auth/auth_api_data.dart';
 import 'package:mafrashi/data_layer/remote_data/auth/auth_data_interface.dart';
-import 'package:mafrashi/data_layer/remote_data/network.dart';
-import 'package:mafrashi/data_layer/remote_data/network_interface.dart';
+import 'package:mafrashi/data_layer/remote_data/product_data/product_api.dart';
+import 'package:mafrashi/data_layer/remote_data/product_data/product_interface.dart';
+import 'package:mafrashi/data_layer/remote_data/user_data/user_api.dart';
 import 'package:mafrashi/data_layer/repository/auth_repository.dart';
 import 'package:mafrashi/data_layer/repository/products_repository.dart';
+import 'package:mafrashi/data_layer/repository/user_repository.dart';
 import 'package:mafrashi/data_layer/shared_prefrences/user_manager.dart';
 import 'package:mafrashi/data_layer/shared_prefrences/user_manager_interface.dart';
+import 'package:mafrashi/providers/category_provider.dart';
 import 'package:mafrashi/providers/products.dart';
+import 'package:mafrashi/providers/profile.dart';
 import 'package:mafrashi/screens/auth_screen.dart';
+import 'package:mafrashi/screens/category_screen.dart';
 import 'package:mafrashi/screens/products_overview_screen.dart';
 import 'package:mafrashi/screens/splash_screen.dart';
+import 'package:mafrashi/screens/tabs_screen.dart';
 import 'package:mafrashi/screens/welcom_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +27,7 @@ import './providers/cart.dart';
 import './screens/cart_screen.dart';
 import './screens/orders_screen.dart';
 import './screens/product_detail_screen.dart';
+import 'helpers/slide_route.dart';
 import 'language/app_loacl.dart';
 import 'providers/change_language_provider.dart';
 
@@ -44,9 +51,9 @@ class MyApp extends StatelessWidget {
   MyApp({this.appLanguage});
 
   final UserManager _userManager = UserManagerImp();
-  final RemoteDataSource _remoteDataSource = Network();
+  final RemoteDataSource _remoteDataSource = ProductApi();
   final AuthApi _authApi = AuthApiImp();
-
+  final ProfileApi _profileApi = ProfileApiImp();
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -55,14 +62,26 @@ class MyApp extends StatelessWidget {
             value: AuthRepositoryImp(_userManager, _authApi)),
         ChangeNotifierProvider.value(
             value: ProductRepository(_remoteDataSource, _userManager)),
+        ChangeNotifierProvider.value(
+            value: ProfileRepositoryImp(_userManager, _profileApi)),
         ChangeNotifierProxyProvider<AuthRepositoryImp, Auth>(
           update: (ctx, authRepo, previousAuth) => Auth(authRepo),
         ),
+        ChangeNotifierProxyProvider<ProfileRepositoryImp, ProfileProvider>(
+            update: (ctx, profileRepo, previousUserData) =>
+                previousUserData == null
+                    ? ProfileProvider(profileRepo)
+                    : previousUserData),
         ChangeNotifierProxyProvider<ProductRepository, ProductsProvider>(
             update: (ctx, productRepo, previousProducts) =>
                 previousProducts == null
                     ? ProductsProvider(productRepo)
                     : previousProducts),
+        ChangeNotifierProxyProvider<ProductRepository, CategoryProvider>(
+            update: (ctx, productRepo, previousCategory) =>
+                previousCategory == null
+                    ? CategoryProvider(productRepo)
+                    : previousCategory),
         ChangeNotifierProvider.value(
           value: Cart(),
         ),
@@ -81,6 +100,18 @@ class MyApp extends StatelessWidget {
             primaryColor: Color(0xFFA8A73A),
             accentColor: Colors.deepOrange,
             fontFamily: 'Lato',
+            textTheme: ThemeData.light().textTheme.copyWith(
+                body1: TextStyle(
+                  color: Color.fromRGBO(20, 51, 51, 1),
+                ),
+                body2: TextStyle(
+                  color: Color.fromRGBO(20, 51, 51, 1),
+                ),
+                title: TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'RobotoCondensed',
+                  fontWeight: FontWeight.bold,
+                )),
             pageTransitionsTheme: PageTransitionsTheme(
               builders: {
                 TargetPlatform.android: CustomPageTransitionBuilder(),
@@ -108,19 +139,30 @@ class MyApp extends StatelessWidget {
                     ConnectionState.waiting)
                   return SplashScreen();
                 else if (auth.isAuthenticated)
-                  return ProductsOverviewScreen();
+                  return TabsScreen();
                 else
                   return WelcomePage();
               }),
           routes: {
+            TabsScreen.routeName: (ctx) => TabsScreen(),
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
             CartScreen.routeName: (ctx) => CartScreen(),
             OrdersScreen.routeName: (ctx) => OrdersScreen(),
             AuthScreen.routeName: (ctx) => AuthScreen(),
-            ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen()
+            ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
+            WelcomePage.routeName: (ctx) => WelcomePage()
           },
+          onGenerateRoute: _generateRoute,
         );
       }),
     );
+  }
+
+  Route _generateRoute(RouteSettings settings) {
+    final String routeName = settings.name;
+    switch (routeName) {
+      case CategoryScreen.routeName:
+        return SlideRightRoute(page: CategoryScreen());
+    }
   }
 }

@@ -25,6 +25,14 @@ class AuthRepositoryImp with ChangeNotifier implements AuthRepository {
   }
 
   @override
+  Future<bool> tryAutoLogin() async {
+    String email = await _userManager.getUserEmail();
+    String password = await _userManager.getUserPassword();
+    if (email == null || password == null) return false;
+    return await login(email, password);
+  }
+
+  @override
   Future<bool> signUp(
       {String firstName,
       String lastName,
@@ -43,5 +51,10 @@ class AuthRepositoryImp with ChangeNotifier implements AuthRepository {
         dateOfBirth: dateOfBirth,
         password: password,
         confirmPassword: confirmPassword);
+  }
+
+  @override
+  Future<String> forgetPassword(String email) async {
+    return await _remoteDataSource.forgetPassword(email);
   }
 }

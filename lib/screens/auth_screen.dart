@@ -1,8 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:mafrashi/language/app_loacl.dart';
 import 'package:mafrashi/widgets/animated_text_field.dart';
+import 'package:mafrashi/widgets/dialog_style.dart';
 import 'package:mafrashi/widgets/form_text_field.dart';
 import 'package:mafrashi/widgets/radio_group_button.dart';
 import 'package:provider/provider.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../model/http_exception.dart';
 import '../providers/auth.dart';
@@ -21,6 +26,7 @@ class _AuthScreenState extends State<AuthScreen>
   final GlobalKey<FormState> _formKey = GlobalKey();
 
   AuthMode _authMode = AuthMode.Login;
+  final _key = GlobalKey<ScaffoldState>();
 
   SingingCharacter _character = SingingCharacter.male;
 
@@ -37,7 +43,7 @@ class _AuthScreenState extends State<AuthScreen>
   var _isLoading = false;
 
   final _passwordController = TextEditingController();
-
+  final _dateController = TextEditingController();
   AnimationController _controller;
 
   Animation<Offset> _slideAnimation;
@@ -124,19 +130,8 @@ class _AuthScreenState extends State<AuthScreen>
             _authData['phone'],
             _authData['date_of_birth']);
       }
-    } on HttpException catch (error) {
-      var errorMessage = 'Authentication failed';
-      if (error.toString().contains('EMAIL_EXISTS')) {
-        errorMessage = 'This email address is already in use.';
-      } else if (error.toString().contains('INVALID_EMAIL')) {
-        errorMessage = 'This is not a valid email address';
-      } else if (error.toString().contains('WEAK_PASSWORD')) {
-        errorMessage = 'This password is too weak.';
-      } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
-        errorMessage = 'Could not find a user with that email.';
-      } else if (error.toString().contains('INVALID_PASSWORD')) {
-        errorMessage = 'Invalid password.';
-      }
+    } on HttpException {
+      var errorMessage = 'Invalid Email or Password';
       _showErrorDialog(errorMessage);
     } catch (error) {
       const errorMessage =
@@ -163,13 +158,63 @@ class _AuthScreenState extends State<AuthScreen>
     }
   }
 
-  void showPicker() async {
+  void _showPicker() async {
     DateTime dateTime = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
-        firstDate: DateTime.now(),
-        lastDate: null);
-    if (dateTime != null) {}
+        firstDate: DateTime(1980, 1, 1),
+        lastDate: DateTime.now());
+    if (dateTime != null) {
+      String date = DateFormat('yyyy-MM-dd').format(dateTime);
+      _authData['date_of_birth'] = date;
+      _dateController.text = date;
+    }
+  }
+
+  Future<void> _forgetPassword() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String message = await Provider.of<Auth>(context, listen: false)
+        .forgetPassword(_authData['email']);
+    _key.currentState.showSnackBar(SnackBar(
+      content: Text(message),
+      elevation: 2,
+      backgroundColor: Theme.of(context).primaryColor,
+    ));
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void _showForgetPasswordDialog() {
+    Alert(
+        context: context,
+        style: alertStyle,
+        title: "Forget password",
+        content: _buildEmailTextField(),
+        buttons: [
+          DialogButton(
+            child: _isLoading ? CircularProgressIndicator : Text("Submit"),
+            onPressed: _forgetPassword,
+          )
+        ]).show();
+  }
+
+  Widget _buildEmailTextField() {
+    return FormTextField(
+      hint: "E-mail",
+      validator: _authMode == AuthMode.Signup
+          ? (value) {
+              if (value.isEmpty || !value.contains('@')) {
+                return 'Invalid email!';
+              }
+            }
+          : null,
+      save: (value) {
+        _authData['email'] = value;
+      },
+    );
   }
 
   @override
@@ -178,6 +223,7 @@ class _AuthScreenState extends State<AuthScreen>
     // final transformConfig = Matrix4.rotationZ(-8 * pi / 180);
     // transformConfig.translate(-10.0);
     return Scaffold(
+        key: _key,
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.white,
@@ -215,11 +261,11 @@ class _AuthScreenState extends State<AuthScreen>
                       child: FlatButton(
                         onPressed: _switchAuthMode,
                         child: Text(
-                          'Sign In',
+                          AppLocalizations.of(context).translate('log_in'),
                           style: TextStyle(
                             fontSize: 20,
                             color: _authMode == AuthMode.Login
-                                ? Colors.green
+                                ? Theme.of(context).primaryColor
                                 : Colors.grey,
                           ),
                         ),
@@ -230,11 +276,11 @@ class _AuthScreenState extends State<AuthScreen>
                       child: FlatButton(
                         onPressed: _switchAuthMode,
                         child: Text(
-                          'Sign Up',
+                          AppLocalizations.of(context).translate('sign_up'),
                           style: TextStyle(
                             fontSize: 20,
                             color: _authMode == AuthMode.Signup
-                                ? Colors.green
+                                ? Theme.of(context).primaryColor
                                 : Colors.grey,
                           ),
                         ),
@@ -245,16 +291,8 @@ class _AuthScreenState extends State<AuthScreen>
                 Container(
                   margin: EdgeInsets.only(left: 16, top: 8),
                   child: Text(
-                    'Welcome to Mafrashi.',
+                    AppLocalizations.of(context).translate('welcome_message'),
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 16, top: 8),
-                  child: Text(
-                    'Let\'s get started',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
                   ),
                 ),
                 Form(
@@ -262,55 +300,50 @@ class _AuthScreenState extends State<AuthScreen>
                   child: SingleChildScrollView(
                     child: Column(
                       children: <Widget>[
-                        AnimatedTextField(
+                        AnimatedInputField(
                           authMode: _authMode,
                           opacityAnimation: _opacityAnimation,
                           slideAnimation: _slideAnimation,
                           child: FormTextField(
-                            hint: "First Name",
+                            hint: AppLocalizations.of(context)
+                                .translate('first_name'),
                             validator: _authMode == AuthMode.Signup
                                 ? (value) {
                                     if (value.isEmpty) {
-                                      return 'Please enter your first name';
+                                      return AppLocalizations.of(context)
+                                          .translate('please_enter_first_name');
                                     }
                                   }
                                 : null,
                           ),
                         ),
-                        AnimatedTextField(
+                        AnimatedInputField(
                           authMode: _authMode,
                           opacityAnimation: _opacityAnimation,
                           slideAnimation: _slideAnimation,
                           child: FormTextField(
-                            hint: "Last Name",
+                            hint: AppLocalizations.of(context)
+                                .translate('last_name'),
                             validator: _authMode == AuthMode.Signup
                                 ? (value) {
                                     if (value.isEmpty) {
-                                      return 'Please enter your last name';
+                                      return AppLocalizations.of(context)
+                                          .translate('please_enter_last_name');
                                     }
                                   }
                                 : null,
                           ),
                         ),
+                        _buildEmailTextField(),
                         FormTextField(
-                          hint: "E-mail",
-                          validator: _authMode == AuthMode.Signup
-                              ? (value) {
-                                  if (value.isEmpty || !value.contains('@')) {
-                                    return 'Invalid email!';
-                                  }
-                                }
-                              : null,
-                          save: (value) {
-                            _authData['email'] = value;
-                          },
-                        ),
-                        FormTextField(
-                          hint: "Password",
+                          hint: AppLocalizations.of(context)
+                              .translate('password'),
+                          controller: _passwordController,
                           validator: _authMode == AuthMode.Signup
                               ? (value) {
                                   if (value.isEmpty || value.length < 5) {
-                                    return 'Password is too short!';
+                                    return AppLocalizations.of(context)
+                                        .translate('short_password');
                                   }
                                 }
                               : null,
@@ -318,56 +351,96 @@ class _AuthScreenState extends State<AuthScreen>
                             _authData['password'] = value;
                           },
                         ),
-                        AnimatedTextField(
+                        AnimatedInputField(
                           authMode: _authMode,
                           opacityAnimation: _opacityAnimation,
                           slideAnimation: _slideAnimation,
                           child: FormTextField(
-                            hint: "Confirm Password",
+                            hint: AppLocalizations.of(context)
+                                .translate('confirm_password'),
                             validator: _authMode == AuthMode.Signup
                                 ? (value) {
                                     if (value != _passwordController.text) {
-                                      return 'Passwords do not match!';
+                                      return AppLocalizations.of(context)
+                                          .translate('password_not_match');
                                     }
                                   }
                                 : null,
                           ),
                         ),
-                        AnimatedTextField(
+                        AnimatedInputField(
                           authMode: _authMode,
                           opacityAnimation: _opacityAnimation,
                           slideAnimation: _slideAnimation,
                           child: FormTextField(
-                            hint: "Phone Number",
+                            hint: AppLocalizations.of(context)
+                                .translate('phone_number'),
                             validator: _authMode == AuthMode.Signup
-                                ? (value) => validateMobile(value)
+                                ? (value) => validateMobile(value, context)
                                 : null,
                             save: (value) {
                               _authData['phone'] = value;
                             },
                           ),
                         ),
-                        AnimatedTextField(
+                        AnimatedInputField(
                             authMode: _authMode,
                             opacityAnimation: _opacityAnimation,
                             slideAnimation: _slideAnimation,
                             child: RadioGroupWidget(_character)),
+                        InkWell(
+                          onTap: () => _showPicker(),
+                          child: AnimatedInputField(
+                            authMode: _authMode,
+                            opacityAnimation: _opacityAnimation,
+                            slideAnimation: _slideAnimation,
+                            child: FormTextField(
+                              controller: _dateController,
+                              hint: AppLocalizations.of(context)
+                                  .translate('date_of_birth'),
+                              validator: _authMode == AuthMode.Signup
+                                  ? (value) {
+                                      if (value.isEmpty) {
+                                        return AppLocalizations.of(context)
+                                            .translate('enter_date_of_birth');
+                                      }
+                                    }
+                                  : null,
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
                 ),
-                Align(
-                    alignment: Alignment.bottomRight,
-                    child: Container(
-                      margin: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                          color: Colors.green, shape: BoxShape.circle),
-                      child: IconButton(
-                        color: Colors.white,
-                        onPressed: _submit,
-                        icon: Icon(Icons.arrow_forward),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: FlatButton(
+                          child: Text(
+                            AppLocalizations.of(context)
+                                .translate('forget_password'),
+                            style: TextStyle(fontSize: 18, color: Colors.grey),
+                          ),
+                          onPressed: _showForgetPasswordDialog,
+                        ),
                       ),
-                    )),
+                      Align(
+                          alignment: Alignment.bottomRight,
+                          child: Container(
+                            margin: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                shape: BoxShape.circle),
+                            child: IconButton(
+                              color: Colors.white,
+                              onPressed: _submit,
+                              icon: Icon(Icons.arrow_forward),
+                            ),
+                          )),
+                    ]),
               ],
             ),
           ),
@@ -375,13 +448,13 @@ class _AuthScreenState extends State<AuthScreen>
   }
 }
 
-String validateMobile(String value) {
+String validateMobile(String value, BuildContext context) {
   String pattern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
   RegExp regExp = new RegExp(pattern);
   if (value.length == 0) {
-    return 'Please enter mobile number';
+    return AppLocalizations.of(context).translate('enter_phone');
   } else if (!regExp.hasMatch(value)) {
-    return 'Please enter valid mobile number';
+    return AppLocalizations.of(context).translate('enter_valid_phone');
   }
   return null;
 }

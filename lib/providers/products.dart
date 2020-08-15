@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mafrashi/data_layer/repository/repository.dart';
-import 'package:mafrashi/model/category.dart';
 import 'package:mafrashi/model/product.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [];
-  List<Category> _categories = [];
+  List<Product> _wishList = [];
+  String _currentCategory;
 
-  List<Category> get categories => _categories;
+  List<Product> get wishList {
+    return [..._wishList];
+  }
+
   Repository _productRepository;
 
   ProductsProvider(this._productRepository);
@@ -25,16 +28,13 @@ class ProductsProvider with ChangeNotifier {
 
   int get selectedCategoryId => _selectedCategoryId;
 
-//  List<Product> get favoriteItems {
-//    return _items.where((prodItem) => prodItem.isFavorite).toList();
-//  }
+  Future<void> fetchWishList() async {
+    if (_wishList == null) _wishList = await _productRepository.fetchWishList();
+    notifyListeners();
+  }
 
   Product findById(int id) {
     return _items.firstWhere((prod) => prod.id == id);
-  }
-
-  Category findCategoryById(int id) {
-    return _categories.firstWhere((cat) => cat.id == id);
   }
 
   Future<void> fetchProducts() async {
@@ -42,8 +42,8 @@ class ProductsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchCategories() async {
-    _categories = await _productRepository.fetchCategory();
+  Future<void> fetchProductsByCategory(String catSlug) async {
+    _items = await _productRepository.fetchProductsFromCategory(catSlug);
     notifyListeners();
   }
 }

@@ -75,6 +75,21 @@ class AuthApiImp implements AuthApi {
     }
   }
 
+  @override
+  Future<String> forgetPassword(String email) async {
+    final url = BASE_URL + SIGN_UP;
+    final response = await http.post(
+      url,
+      body: jsonEncode({'email': email}),
+      headers: header,
+    );
+    final responseData = json.decode(response.body);
+    if (responseData['error'] != null) {
+      return responseData['error'];
+    } else
+      return responseData['message'];
+  }
+
   String _updateCookie(http.Response response) {
     String rawCookie = response.headers['set-cookie'];
     if (rawCookie != null) {

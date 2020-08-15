@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mafrashi/screens/auth_screen.dart';
 
-class AnimatedTextField extends StatelessWidget {
-  const AnimatedTextField(
+class AnimatedInputField extends StatelessWidget {
+  const AnimatedInputField(
       {@required AuthMode authMode,
       @required Animation<double> opacityAnimation,
       @required Animation<Offset> slideAnimation,

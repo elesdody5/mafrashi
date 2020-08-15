@@ -14,4 +14,6 @@ abstract class AuthApi {
       @required String confirmPassword,
       @required String phone,
       @required String dateOfBirth});
+
+  Future<String> forgetPassword(String email);
 }

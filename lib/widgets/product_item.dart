@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mafrashi/language/app_loacl.dart';
+import 'package:mafrashi/widgets/authenticated_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../model/product.dart';
@@ -33,41 +35,37 @@ class ProductItem extends StatelessWidget {
           ),
         ),
         footer: GridTileBar(
-          backgroundColor: Colors.black87,
-          leading: IconButton(
-            icon: Icon(
-              _product.isFavorite ? Icons.favorite : Icons.favorite_border,
-            ),
-            color: Theme.of(context).accentColor,
-            onPressed: () {},
-          ),
+          backgroundColor: Colors.white,
           title: Text(
             _product.name,
+            style: TextStyle(color: Colors.black),
             textAlign: TextAlign.center,
           ),
-          trailing: IconButton(
-            icon: Icon(
-              Icons.shopping_cart,
+          trailing: AuthenticatedWidget(
+            child: IconButton(
+              icon: Icon(
+                Icons.shopping_cart,
+              ),
+              onPressed: () {
+                cart.addItem(_product.id, _product.price, _product.name);
+                Scaffold.of(context).hideCurrentSnackBar();
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context).translate('added_cart'),
+                    ),
+                    duration: Duration(seconds: 2),
+                    action: SnackBarAction(
+                      label: AppLocalizations.of(context).translate('undo'),
+                      onPressed: () {
+                        cart.removeSingleItem(_product.id);
+                      },
+                    ),
+                  ),
+                );
+              },
+              color: Theme.of(context).accentColor,
             ),
-            onPressed: () {
-              cart.addItem(_product.id, _product.price, _product.name);
-              Scaffold.of(context).hideCurrentSnackBar();
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Added item to cart!',
-                  ),
-                  duration: Duration(seconds: 2),
-                  action: SnackBarAction(
-                    label: 'UNDO',
-                    onPressed: () {
-                      cart.removeSingleItem(_product.id);
-                    },
-                  ),
-                ),
-              );
-            },
-            color: Theme.of(context).accentColor,
           ),
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:fancy_bar/fancy_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:mafrashi/language/app_loacl.dart';
 
 class ButtomNavigaton extends StatelessWidget {
   @override
@@ -14,17 +15,17 @@ class ButtomNavigaton extends StatelessWidget {
         ),
         FancyItem(
           textColor: Colors.red,
-          title: 'Trending',
+          title: AppLocalizations.of(context).translate('categories'),
           icon: Icon(Icons.trending_up),
         ),
         FancyItem(
           textColor: Colors.green,
-          title: 'Search',
+          title: AppLocalizations.of(context).translate('orders'),
           icon: Icon(Icons.search),
         ),
         FancyItem(
           textColor: Colors.brown,
-          title: 'Settings',
+          title: AppLocalizations.of(context).translate('settings'),
           icon: Icon(Icons.settings),
         ),
       ],

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mafrashi/data_layer/remote_data/network_interface.dart';
+import 'package:mafrashi/data_layer/remote_data/product_data/product_interface.dart';
 import 'package:mafrashi/data_layer/repository/repository.dart';
 import 'package:mafrashi/data_layer/shared_prefrences/user_manager_interface.dart';
 import 'package:mafrashi/model/category.dart';
 import 'package:mafrashi/model/product.dart';
+import 'package:mafrashi/model/sub_category.dart';
 
 class ProductRepository with ChangeNotifier implements Repository {
   RemoteDataSource _remoteDataSource;
@@ -25,5 +26,21 @@ class ProductRepository with ChangeNotifier implements Repository {
   Future<bool> addToWishList(int productId) async {
     String token = await _userManager.getToken();
     return await _remoteDataSource.addToWishList(productId, token);
+  }
+
+  @override
+  Future<List<Product>> fetchWishList() async {
+    String token = await _userManager.getToken();
+    return await _remoteDataSource.fetchWishList(token);
+  }
+
+  @override
+  Future<List<Product>> fetchProductsFromCategory(String categorySlug) async {
+    return await _remoteDataSource.fetchProductsFromCategory(categorySlug);
+  }
+
+  @override
+  Future<List<SubCategory>> fetchSubCategories(String categorySlug) async {
+    return await _remoteDataSource.fetchSubCategories(categorySlug);
   }
 }

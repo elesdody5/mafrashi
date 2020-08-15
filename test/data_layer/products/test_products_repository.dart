@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mafrashi/data_layer/remote_data/network.dart';
-import 'package:mafrashi/data_layer/remote_data/network_interface.dart';
+import 'package:mafrashi/data_layer/remote_data/product_data/product_api.dart';
+import 'package:mafrashi/data_layer/remote_data/product_data/product_interface.dart';
 import 'package:mafrashi/data_layer/repository/products_repository.dart';
 import 'package:mafrashi/data_layer/repository/repository.dart';
 import 'package:mafrashi/data_layer/shared_prefrences/user_manager_interface.dart';
@@ -13,7 +13,7 @@ String _email = "eles@ele.com";
 String _token =
     "eyJpdiI6IlhwTlVFbW5pcjNYUnE3MzJrcDdTWEE9PSIsInZhbHVlIjoiRDhlZm1PR1h1anNXeTFUOWJuNWdQUjN3dW16emhxNHhYbVFlSFh3a29jS0M0ZnR1aHNmalNXRHFzM0RYbUFSdyIsIm1hYyI6Ijg5ZWRjNzAyOWFmMmUxN2ZlNzVlNzc0MjdmNzBiZDA5NjIxMWYxNGJmNmE4ZWY1NzA0ZGMzNThhMjdkNzJhNzkifQ";
 UserManager fakeUserManger = FakeUserManager(_email, _token);
-RemoteDataSource _remoteDataSource = Network();
+RemoteDataSource _remoteDataSource = ProductApi();
 Repository productRepository =
     ProductRepository(_remoteDataSource, fakeUserManger);
 
@@ -32,5 +32,13 @@ void main() {
   test("add product to wish list ", () async {
     bool result = await productRepository.addToWishList(5);
     expect(result, true);
+  });
+  test("fetch product according to category", () async {
+    final list = await productRepository.fetchProductsFromCategory("mlayat");
+    expect(list.isNotEmpty, true);
+  });
+  test("fetch sub category from category", () async {
+    final list = await productRepository.fetchSubCategories("1");
+    expect(list.isNotEmpty, true);
   });
 }
