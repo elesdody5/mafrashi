@@ -1,5 +1,6 @@
 {
   "log_in": "Login",
+  "log_out": "Logout",
   "sign_up": "Sign UP",
   "english": "English",
   "app_name": "Mafrashi",
@@ -22,15 +23,19 @@
   "arabic": "Arabic",
   "lan": "English",
   "home": "Home",
+  "continue": "continue",
   "categories": "Categories",
   "orders": "Orders",
   "settings": "Settings",
+  "updated_successfully": "Updated Successfully",
   "all_products": "All Products",
   "added_cart": "Added to cart",
+  "add_to_cart": "Add to cart",
   "undo": "Undo",
   "choose_language": "Choose Language",
   "language": "Language:",
   "wish_list": "WishList",
+  "profile": "Profile",
   "enter_password_phone": "Please Enter Phone and Password",
   "register_new_account": "Register a new account",
   "forget_password": "Forget Password",
@@ -38,5 +43,6 @@
   "please_enter_phone": "Please Enter Phone Number",
   "please_enter_password": "Please Enter Password",
   "enter_password": "Enter Password",
-  "edit_account": "Edit Account"
+  "edit_account": "Edit Account",
+  "sign_up_successfully": "SignUp Successfully"
 }

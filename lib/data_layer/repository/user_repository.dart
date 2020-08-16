@@ -15,4 +15,19 @@ class ProfileRepositoryImp with ChangeNotifier implements ProfileRepository {
     String token = await _userManager.getToken();
     return _remoteDataSource.fetchUserData(token);
   }
+
+  @override
+  Future<bool> editProfile(
+      {String firstName,
+      String lastName,
+      String email,
+      String gender,
+      String password,
+      String confirmPassword,
+      String phone,
+      String dateOfBirth}) async {
+    String token = await _userManager.getToken();
+    return _remoteDataSource.editProfile(token, firstName, lastName, email,
+        gender, password, confirmPassword, phone, dateOfBirth);
+  }
 }

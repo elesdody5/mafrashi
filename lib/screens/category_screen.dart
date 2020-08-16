@@ -77,7 +77,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       AppLocalizations.of(context).translate('all_products'),
                       style: Theme.of(context).textTheme.title),
                 ),
-                Flexible(flex: 4, child: ProductsGrid())
+                Flexible(
+                    flex: 4,
+                    child: Consumer<ProductsProvider>(
+                        builder: (_, products, ch) =>
+                            ProductsGrid(products.items)))
               ]);
   }
 

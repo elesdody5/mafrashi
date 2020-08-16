@@ -5,8 +5,7 @@ import 'package:mafrashi/model/product.dart';
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [];
   List<Product> _wishList = [];
-  String _currentCategory;
-
+  List<Product> _productCategory = [];
   List<Product> get wishList {
     return [..._wishList];
   }
@@ -27,6 +26,10 @@ class ProductsProvider with ChangeNotifier {
   }
 
   int get selectedCategoryId => _selectedCategoryId;
+  Future<bool> addToWishList(int productId) async {
+    bool result = await _productRepository.addToWishList(productId);
+    return result;
+  }
 
   Future<void> fetchWishList() async {
     if (_wishList == null) _wishList = await _productRepository.fetchWishList();

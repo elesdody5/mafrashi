@@ -12,6 +12,7 @@ class AuthRepositoryImp with ChangeNotifier implements AuthRepository {
   @override
   Future<bool> login(String email, String password) async {
     String token = await _remoteDataSource.login(email, password);
+    await _userManager.saveUserData(email, password);
     await _userManager.saveToken(token);
     return true;
   }

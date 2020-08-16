@@ -33,4 +33,13 @@ abstract class Repository {
 
 abstract class ProfileRepository {
   Future<User> fetchUserData();
+  Future<bool> editProfile(
+      {@required String firstName,
+      @required String lastName,
+      @required String email,
+      @required String gender,
+      @required String password,
+      @required String confirmPassword,
+      @required String phone,
+      @required String dateOfBirth});
 }

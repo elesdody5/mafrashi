@@ -14,9 +14,11 @@ import 'package:mafrashi/data_layer/shared_prefrences/user_manager_interface.dar
 import 'fake_user_manger.dart';
 
 String _email = "eles@ele.com";
+String password = "password";
 String _token;
 
-UserManager fakeUserManger = FakeUserManager(_email, _token);
+UserManager fakeUserManger =
+    FakeUserManager(email: _email, token: _token, password: password);
 AuthRepository authRepository = AuthRepositoryImp(fakeUserManger, AuthApiImp());
 
 void main() {
@@ -44,5 +46,9 @@ void main() {
   });
   test('login  user throws exception if not found', () {
     expect(authRepository.login("mohamed", "pass"), throwsA(Exception));
+  });
+  test("auto login when email and password save  ", () async {
+    bool result = await authRepository.tryAutoLogin();
+    expect(result, true);
   });
 }

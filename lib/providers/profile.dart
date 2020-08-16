@@ -15,4 +15,16 @@ class ProfileProvider with ChangeNotifier {
     _user = await _profileRepository.fetchUserData();
     notifyListeners();
   }
+
+  Future<bool> editProfile(
+      String firstName,
+      String lastName,
+      String email,
+      String gender,
+      String password,
+      String confirmPassword,
+      String phone,
+      String dateOfBirth) async {
+    return await _profileRepository.editProfile();
+  }
 }

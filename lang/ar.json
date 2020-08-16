@@ -1,11 +1,14 @@
 {
   "log_in": "دخول",
+  "log_out": "تسجيل خروج",
   "sign_up": "تسجيل دخول",
   "english": "الانجليزية",
   "arabic": "العربيه",
   "app_name": "مفرشى",
   "welcome": "مرحبا",
   "skip": "تخطى",
+  "add_to_cart": "اضافة الى العربة",
+
   "welcome_message": "مرحبا بك فى مفرشى",
   "first_name": "الاسم الاول",
   "please_enter_first_name": "من فضلك ادخل الاسم الاول",
@@ -37,6 +40,9 @@
   "please_enter_phone": "من فضلك ادخل رقم التلفون",
   "please_enter_password": "من فضلك ادخل كلمله المرور",
   "enter_password": "ادخل كلمه المرور",
-  "edit_account": "تعديل الحساب"
-
+  "edit_account": "تعديل الحساب",
+  "profile": "ملف الشخصى",
+  "sign_up_successfully": "تم تسجيل بنجاح",
+  "continue": "متابعة",
+  "updated_successfully": "تم التعديل بنجاح"
 }

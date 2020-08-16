@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:mafrashi/model/product.dart';
 
 import './product_item.dart';
-import '../providers/products.dart';
 
 class ProductsGrid extends StatelessWidget {
+  List<Product> products;
+  ProductsGrid(this.products);
   @override
   Widget build(BuildContext context) {
-    final productsData = Provider.of<ProductsProvider>(context);
-    final products = productsData.items;
     return GridView.builder(
-      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(10.0),
       itemCount: products.length,
       itemBuilder: (ctx, i) => ProductItem(products[i]),

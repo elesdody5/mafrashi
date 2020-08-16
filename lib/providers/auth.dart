@@ -5,10 +5,8 @@ import 'package:mafrashi/data_layer/repository/repository.dart';
 import 'package:mafrashi/model/user.dart';
 
 class Auth with ChangeNotifier {
-  String _token;
   bool _isAuthenticated = false;
   AuthRepository _authRepository;
-  User _user;
 
   Auth(this._authRepository);
 
@@ -41,9 +39,9 @@ class Auth with ChangeNotifier {
   }
 
   Future<bool> tryAutoLogin() async {
-    _authRepository.tryAutoLogin();
-
-    return true;
+    _isAuthenticated = await _authRepository.tryAutoLogin();
+    notifyListeners();
+    return _isAuthenticated;
   }
 
   Future<void> logout() async {

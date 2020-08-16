@@ -19,20 +19,16 @@ class ProductApi implements RemoteDataSource {
   Future<List<Product>> fetchProducts() async {
     var url = BASE_URL + PRODUCTS;
     List<Product> productList = [];
-    try {
-      final response = await http.get(url);
-      final responseData = json.decode(response.body) as Map<String, dynamic>;
-      if (responseData == null) {
-        return productList;
-      }
-      final data = responseData['data'];
-
-      data.forEach(
-          (productJson) => productList.add(Product.fromJson(productJson)));
+    final response = await http.get(url);
+    final responseData = json.decode(response.body) as Map<String, dynamic>;
+    if (responseData == null) {
       return productList;
-    } catch (error) {
-      throw HttpException(error.toString(), uri: Uri.parse(url));
     }
+    final data = responseData['data'];
+
+    data.forEach(
+        (productJson) => productList.add(Product.fromJson(productJson)));
+    return productList;
   }
 
   @override
@@ -130,6 +126,6 @@ class ProductApi implements RemoteDataSource {
   }
 
   void _addAuthorizationToHeader(String token) {
-    header['Authorization'] = 'Bearer $token';
+    header['Cookie'] = 'mafrashi_session=$token';
   }
 }

@@ -40,8 +40,8 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   void _fetchData() async {
     try {
-      await Provider.of<ProductsProvider>(context, listen: false)
-          .fetchWishList();
+//      await Provider.of<ProductsProvider>(context, listen: false)
+//          .fetchWishList();
       await Provider.of<CategoryProvider>(context, listen: false)
           .fetchCategories();
       await Provider.of<ProductsProvider>(context, listen: false)
@@ -63,26 +63,27 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ? Center(
             child: CircularProgressIndicator(),
           )
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    AppLocalizations.of(context).translate('categories'),
-                    style: Theme.of(context).textTheme.title,
-                  ),
-                ),
-                Flexible(flex: 1, child: CategoriesGrid()),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                      AppLocalizations.of(context).translate('all_products'),
-                      style: Theme.of(context).textTheme.title),
-                ),
-                Flexible(flex: 4, child: ProductsGrid())
-              ]);
+        : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                AppLocalizations.of(context).translate('categories'),
+                style: Theme.of(context).textTheme.title,
+              ),
+            ),
+            Flexible(flex: 1, child: CategoriesGrid()),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                  AppLocalizations.of(context).translate('all_products'),
+                  style: Theme.of(context).textTheme.title),
+            ),
+            Flexible(
+              flex: 5,
+              child: Consumer<ProductsProvider>(
+                  builder: (_, products, ch) => ProductsGrid(products.items)),
+            )
+          ]);
   }
 
   @override

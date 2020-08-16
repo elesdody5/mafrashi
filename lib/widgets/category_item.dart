@@ -21,10 +21,13 @@ class CategoryItem extends StatelessWidget {
           arguments: _category.id,
         );
       },
-      child: Chip(
-        label: Text(_category.name),
-        labelStyle: TextStyle(color: Colors.white),
-        backgroundColor: Theme.of(context).accentColor,
+      child: Container(
+        margin: EdgeInsets.all(5),
+        child: Chip(
+          label: Text(_category.name),
+          labelStyle: TextStyle(color: Colors.white),
+          backgroundColor: Theme.of(context).accentColor,
+        ),
       ),
     );
   }

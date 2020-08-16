@@ -5,14 +5,21 @@ class FormTextField extends StatelessWidget {
   final hint;
   final TextEditingController controller;
   final Function save;
+  final enable;
 
-  FormTextField({this.hint, this.validator, this.controller, this.save});
+  FormTextField(
+      {this.hint,
+      this.validator,
+      this.controller,
+      this.save,
+      this.enable = true});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 8),
       child: TextFormField(
+        enabled: enable,
         controller: controller,
         style: TextStyle(fontSize: 18),
         keyboardType: TextInputType.text,

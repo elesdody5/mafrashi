@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mafrashi/language/app_loacl.dart';
+import 'package:mafrashi/screens/tabs_screen.dart';
 import 'package:mafrashi/widgets/animated_text_field.dart';
 import 'package:mafrashi/widgets/dialog_style.dart';
 import 'package:mafrashi/widgets/form_text_field.dart';
@@ -84,6 +85,28 @@ class _AuthScreenState extends State<AuthScreen>
     _controller.dispose();
   }
 
+  void _showSignUpSuccessfully() {
+    Alert(
+      context: context,
+      type: AlertType.success,
+      title: AppLocalizations.of(context).translate('sign_up_successfully'),
+      style: AlertStyle(isCloseButton: false),
+      buttons: [
+        DialogButton(
+          child: Text(
+            AppLocalizations.of(context).translate('continue'),
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+            _controller.reverse();
+          },
+          width: 120,
+        )
+      ],
+    ).show();
+  }
+
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -114,13 +137,15 @@ class _AuthScreenState extends State<AuthScreen>
     try {
       if (_authMode == AuthMode.Login) {
         // Log user in
-        await Provider.of<Auth>(context, listen: false).login(
+        bool result = await Provider.of<Auth>(context, listen: false).login(
           _authData['email'],
           _authData['password'],
         );
+        if (result)
+          Navigator.pushReplacementNamed(context, TabsScreen.routeName);
       } else {
         // Sign user up
-        await Provider.of<Auth>(context, listen: false).signUp(
+        bool result = await Provider.of<Auth>(context, listen: false).signUp(
             _authData['first_name'],
             _authData['last_name'],
             _authData['email'],
@@ -129,6 +154,7 @@ class _AuthScreenState extends State<AuthScreen>
             _authData['password'],
             _authData['phone'],
             _authData['date_of_birth']);
+        if (result) _showSignUpSuccessfully();
       }
     } on HttpException {
       var errorMessage = 'Invalid Email or Password';
@@ -434,11 +460,13 @@ class _AuthScreenState extends State<AuthScreen>
                             decoration: BoxDecoration(
                                 color: Theme.of(context).primaryColor,
                                 shape: BoxShape.circle),
-                            child: IconButton(
-                              color: Colors.white,
-                              onPressed: _submit,
-                              icon: Icon(Icons.arrow_forward),
-                            ),
+                            child: _isLoading
+                                ? CircularProgressIndicator()
+                                : IconButton(
+                                    color: Colors.white,
+                                    onPressed: _submit,
+                                    icon: Icon(Icons.arrow_forward),
+                                  ),
                           )),
                     ]),
               ],
