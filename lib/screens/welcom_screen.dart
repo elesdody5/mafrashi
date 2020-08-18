@@ -56,6 +56,10 @@ class WelcomePage extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
+                Hero(
+                  tag: 1,
+                  child: Image.asset('assets/images/icon.png'),
+                ),
                 Text(
                   AppLocalizations.of(context).translate('welcome'),
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mafrashi/model/cart.dart';
 import 'package:mafrashi/model/category.dart';
 import 'package:mafrashi/model/product.dart';
 import 'package:mafrashi/model/sub_category.dart';
@@ -29,6 +30,9 @@ abstract class Repository {
   Future<List<Product>> fetchWishList();
   Future<List<SubCategory>> fetchSubCategories(String categorySlug);
   Future<List<Product>> fetchProductsFromCategory(String categorySlug);
+  Future<bool> addToCart(
+      int productId, int quantity, int colorId, int sizeId, int variantId);
+  Future<List<Cart>> fetchCartList();
 }
 
 abstract class ProfileRepository {

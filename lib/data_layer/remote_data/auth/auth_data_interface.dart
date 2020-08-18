@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 abstract class AuthApi {
   Future<String> login(String email, String password);
 
-  Future<bool> logout(String email);
+  Future<bool> logout(String email, String token);
 
   Future<bool> signUp(
       {@required String firstName,

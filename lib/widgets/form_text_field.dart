@@ -6,19 +6,22 @@ class FormTextField extends StatelessWidget {
   final TextEditingController controller;
   final Function save;
   final enable;
+  final obscure;
 
   FormTextField(
       {this.hint,
       this.validator,
       this.controller,
       this.save,
-      this.enable = true});
+      this.enable = true,
+      this.obscure = false});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 8),
       child: TextFormField(
+        obscureText: obscure,
         enabled: enable,
         controller: controller,
         style: TextStyle(fontSize: 18),

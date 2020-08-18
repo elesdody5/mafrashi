@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mafrashi/language/app_loacl.dart';
 import 'package:mafrashi/model/product.dart';
 import 'package:mafrashi/providers/products.dart';
+import 'package:mafrashi/screens/cart_screen.dart';
+import 'package:mafrashi/widgets/authenticated_widget.dart';
+import 'package:mafrashi/widgets/cart_dialog.dart';
 import 'package:mafrashi/widgets/design_theme.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +19,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     with TickerProviderStateMixin {
   Product _product;
   bool _isInit = true;
+  bool _isLoading = false;
 
   final double infoHeight = 364.0;
   AnimationController animationController;
@@ -51,18 +55,35 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     });
   }
 
-  @override
-  void didUpdateWidget(ProductDetailScreen oldWidget) {
-    if (_isInit) {
-      final productId =
-          ModalRoute.of(context).settings.arguments as int; // is the id!
-      _product = Provider.of<ProductsProvider>(
-        context,
-        listen: false,
-      ).findById(productId);
+  Future<void> _addToWishList(
+      ProductsProvider provider, BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+    bool result = await provider.addToWishList(_product.id);
+    if (result) {
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).translate('added_wish_list'),
+          ),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      Scaffold.of(context).hideCurrentSnackBar();
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).translate('something_went_wrong'),
+          ),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
-    _isInit = false;
-    super.didUpdateWidget(oldWidget);
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -72,284 +93,308 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     final double tempHeight = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).size.width / 1.2) +
         24.0;
+    final productId =
+        ModalRoute.of(context).settings.arguments as int; // is the id!
+    _product = productProvider.findById(productId);
     return Container(
       color: DesignCourseAppTheme.nearlyWhite,
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: Stack(
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                AspectRatio(
-                  aspectRatio: 1.2,
-                  child: Hero(
-                    tag: _product.id,
-                    child: FadeInImage(
-                      placeholder: AssetImage('assets/images/photo.png'),
-                      image: NetworkImage(_product.imageUrl),
-                      fit: BoxFit.cover,
+        body: Builder(builder: (context) {
+          return Stack(
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  AspectRatio(
+                    aspectRatio: 1.2,
+                    child: Hero(
+                      tag: _product.id,
+                      child: FadeInImage(
+                        placeholder: AssetImage('assets/images/photo.png'),
+                        image: NetworkImage(_product.imageUrl),
+                        fit: BoxFit.cover,
+                      ),
                     ),
+                  )
+                ],
+              ),
+              Positioned(
+                top: (MediaQuery.of(context).size.width / 1.2) - 24.0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: DesignCourseAppTheme.nearlyWhite,
+                    borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(32.0),
+                        topRight: Radius.circular(32.0)),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                          color: DesignCourseAppTheme.grey.withOpacity(0.2),
+                          offset: const Offset(1.1, 1.1),
+                          blurRadius: 10.0),
+                    ],
                   ),
-                )
-              ],
-            ),
-            Positioned(
-              top: (MediaQuery.of(context).size.width / 1.2) - 24.0,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: DesignCourseAppTheme.nearlyWhite,
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(32.0),
-                      topRight: Radius.circular(32.0)),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                        color: DesignCourseAppTheme.grey.withOpacity(0.2),
-                        offset: const Offset(1.1, 1.1),
-                        blurRadius: 10.0),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8, right: 8),
-                  child: SingleChildScrollView(
-                    child: Container(
-                      constraints: BoxConstraints(
-                          minHeight: infoHeight,
-                          maxHeight: tempHeight > infoHeight
-                              ? tempHeight
-                              : infoHeight),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 32.0, left: 18, right: 16),
-                            child: Text(
-                              _product.name,
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 22,
-                                letterSpacing: 0.27,
-                                color: DesignCourseAppTheme.darkerText,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 16, right: 16, bottom: 8, top: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  _product.price,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w200,
-                                    fontSize: 22,
-                                    letterSpacing: 0.27,
-                                    color: DesignCourseAppTheme.nearlyBlue,
-                                  ),
-                                ),
-                                Container(
-                                  child: Row(
-                                    children: <Widget>[
-                                      Text(
-                                        _product.review.total.toString(),
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w200,
-                                          fontSize: 22,
-                                          letterSpacing: 0.27,
-                                          color: DesignCourseAppTheme.grey,
-                                        ),
-                                      ),
-                                      Icon(
-                                        Icons.star,
-                                        color: Theme.of(context).primaryColor,
-                                        size: 24,
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          AnimatedOpacity(
-                            duration: const Duration(milliseconds: 500),
-                            opacity: opacity1,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Row(
-                                children: <Widget>[
-                                  ..._product.colors
-                                      .map((color) => getTimeBoxUI(color.name))
-                                ],
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: AnimatedOpacity(
-                              duration: const Duration(milliseconds: 500),
-                              opacity: opacity2,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 16, right: 16, top: 8, bottom: 8),
-                                child: Text(
-                                  _product.description,
-                                  textAlign: TextAlign.justify,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w200,
-                                    fontSize: 14,
-                                    letterSpacing: 0.27,
-                                    color: DesignCourseAppTheme.grey,
-                                  ),
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                          ),
-                          AnimatedOpacity(
-                            duration: const Duration(milliseconds: 500),
-                            opacity: opacity3,
-                            child: Padding(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8),
+                    child: SingleChildScrollView(
+                      child: Container(
+                        constraints: BoxConstraints(
+                            minHeight: infoHeight,
+                            maxHeight: tempHeight > infoHeight
+                                ? tempHeight
+                                : infoHeight),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
                               padding: const EdgeInsets.only(
-                                  left: 16, bottom: 16, right: 16),
+                                  top: 32.0, left: 18, right: 16),
+                              child: Text(
+                                _product.name,
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 22,
+                                  letterSpacing: 0.27,
+                                  color: DesignCourseAppTheme.darkerText,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 16, right: 16, bottom: 8, top: 16),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
-                                  Container(
-                                    width: 48,
-                                    height: 48,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: DesignCourseAppTheme.nearlyWhite,
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(16.0),
-                                        ),
-                                        border: Border.all(
-                                            color: DesignCourseAppTheme.grey
-                                                .withOpacity(0.2)),
-                                      ),
-                                      child: Icon(
-                                        Icons.add_shopping_cart,
-                                        color: DesignCourseAppTheme.nearlyBlue,
-                                        size: 28,
-                                      ),
+                                  Text(
+                                    _product.price,
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w200,
+                                      fontSize: 22,
+                                      letterSpacing: 0.27,
+                                      color: Theme.of(context).accentColor,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    width: 16,
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      height: 48,
-                                      decoration: BoxDecoration(
-                                        color: DesignCourseAppTheme.nearlyBlue,
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(16.0),
-                                        ),
-                                        boxShadow: <BoxShadow>[
-                                          BoxShadow(
-                                              color: Theme.of(context)
-                                                  .primaryColor
-                                                  .withOpacity(0.5),
-                                              offset: const Offset(1.1, 1.1),
-                                              blurRadius: 10.0),
-                                        ],
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          AppLocalizations.of(context)
-                                              .translate('add_to_cart'),
+                                  Container(
+                                    child: Row(
+                                      children: <Widget>[
+                                        Text(
+                                          _product.review.total.toString(),
                                           textAlign: TextAlign.left,
                                           style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 18,
-                                            letterSpacing: 0.0,
-                                            color: DesignCourseAppTheme
-                                                .nearlyWhite,
+                                            fontWeight: FontWeight.w200,
+                                            fontSize: 22,
+                                            letterSpacing: 0.27,
+                                            color: DesignCourseAppTheme.grey,
                                           ),
                                         ),
-                                      ),
+                                        Icon(
+                                          Icons.star,
+                                          color: Theme.of(context).accentColor,
+                                          size: 24,
+                                        ),
+                                      ],
                                     ),
                                   )
                                 ],
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            height: MediaQuery.of(context).padding.bottom,
-                          )
-                        ],
+                            AnimatedOpacity(
+                              duration: const Duration(milliseconds: 500),
+                              opacity: opacity1,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: <Widget>[
+                                      ..._product.varints.map((variant) =>
+                                          getTimeBoxUI(variant.name))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: AnimatedOpacity(
+                                duration: const Duration(milliseconds: 500),
+                                opacity: opacity2,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16, right: 16, top: 8, bottom: 8),
+                                  child: Text(
+                                    _product.description,
+                                    textAlign: TextAlign.justify,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w200,
+                                      fontSize: 14,
+                                      letterSpacing: 0.27,
+                                      color: DesignCourseAppTheme.grey,
+                                    ),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            AnimatedOpacity(
+                              duration: const Duration(milliseconds: 500),
+                              opacity: opacity3,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 16, bottom: 16, right: 16),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Container(
+                                      width: 48,
+                                      height: 48,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color:
+                                              DesignCourseAppTheme.nearlyWhite,
+                                          borderRadius: const BorderRadius.all(
+                                            Radius.circular(16.0),
+                                          ),
+                                          border: Border.all(
+                                              color: DesignCourseAppTheme.grey
+                                                  .withOpacity(0.2)),
+                                        ),
+                                        child: AuthenticatedWidget(
+                                          onTap: () => Navigator.pushNamed(
+                                              context, CartScreen.routeName),
+                                          child: Icon(
+                                            Icons.add_shopping_cart,
+                                            color:
+                                                Theme.of(context).accentColor,
+                                            size: 28,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 16,
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        height: 48,
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).accentColor,
+                                          borderRadius: const BorderRadius.all(
+                                            Radius.circular(16.0),
+                                          ),
+                                          boxShadow: <BoxShadow>[
+                                            BoxShadow(
+                                                color: Theme.of(context)
+                                                    .primaryColor
+                                                    .withOpacity(0.5),
+                                                offset: const Offset(1.1, 1.1),
+                                                blurRadius: 10.0),
+                                          ],
+                                        ),
+                                        child: FlatButton(
+                                          onPressed: () => showDialog(
+                                              context: context,
+                                              builder: (ctx) =>
+                                                  CartDialog(_product)),
+                                          child: Center(
+                                            child: Text(
+                                              AppLocalizations.of(context)
+                                                  .translate('add_to_cart'),
+                                              textAlign: TextAlign.left,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 18,
+                                                letterSpacing: 0.0,
+                                                color: DesignCourseAppTheme
+                                                    .nearlyWhite,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).padding.bottom,
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              top: (MediaQuery.of(context).size.width / 1.2) - 24.0 - 35,
-              right: 35,
-              child: ScaleTransition(
-                alignment: Alignment.center,
-                scale: CurvedAnimation(
-                    parent: animationController, curve: Curves.fastOutSlowIn),
-                child: Card(
-                  color: Theme.of(context).primaryColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50.0)),
-                  elevation: 10.0,
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    child: Consumer<ProductsProvider>(
-                        builder: (_, productProvider, __) {
-                      return Center(
-                        child: IconButton(
-                          onPressed: () =>
-                              productProvider.addToWishList(_product.id),
-                          icon: Icon(
-                            Icons.favorite,
-                            color: DesignCourseAppTheme.nearlyWhite,
-                            size: 30,
+              Positioned(
+                top: (MediaQuery.of(context).size.width / 1.2) - 24.0 - 35,
+                right: 35,
+                child: ScaleTransition(
+                  alignment: Alignment.center,
+                  scale: CurvedAnimation(
+                      parent: animationController, curve: Curves.fastOutSlowIn),
+                  child: Card(
+                    color: Theme.of(context).accentColor,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50.0)),
+                    elevation: 10.0,
+                    child: Container(
+                        width: 60,
+                        height: 60,
+                        child: Center(
+                          child: AuthenticatedWidget(
+                            child: _isLoading
+                                ? CircularProgressIndicator(
+                                    backgroundColor: Colors.white,
+                                  )
+                                : IconButton(
+                                    onPressed: () => _addToWishList(
+                                        productProvider, context),
+                                    icon: Icon(
+                                      Icons.favorite,
+                                      color: DesignCourseAppTheme.nearlyWhite,
+                                      size: 30,
+                                    ),
+                                  ),
                           ),
-                        ),
-                      );
-                    }),
+                        )),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-              child: SizedBox(
-                width: AppBar().preferredSize.height,
-                height: AppBar().preferredSize.height,
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius:
-                        BorderRadius.circular(AppBar().preferredSize.height),
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: DesignCourseAppTheme.nearlyBlack,
+              Padding(
+                padding:
+                    EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                child: SizedBox(
+                  width: AppBar().preferredSize.height,
+                  height: AppBar().preferredSize.height,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius:
+                          BorderRadius.circular(AppBar().preferredSize.height),
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: DesignCourseAppTheme.nearlyBlack,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
                     ),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
                   ),
                 ),
-              ),
-            )
-          ],
-        ),
+              )
+            ],
+          );
+        }),
       ),
     );
   }
@@ -378,7 +423,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               fontWeight: FontWeight.w600,
               fontSize: 14,
               letterSpacing: 0.27,
-              color: DesignCourseAppTheme.nearlyBlue,
+              color: Theme.of(context).accentColor,
             ),
           ),
         ),

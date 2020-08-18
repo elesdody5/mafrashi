@@ -82,9 +82,10 @@ class MyApp extends StatelessWidget {
                 previousCategory == null
                     ? CategoryProvider(productRepo)
                     : previousCategory),
-        ChangeNotifierProvider.value(
-          value: Cart(),
-        ),
+        ChangeNotifierProxyProvider<ProductRepository, CartProvider>(
+            update: (ctx, productRepo, previousCart) => previousCart == null
+                ? CartProvider(productRepo)
+                : previousCart),
 //        ChangeNotifierProxyProvider<Auth, Orders>(
 //          builder: (ctx, auth, previousOrders) => Orders(
 //            auth.token,
@@ -160,9 +161,12 @@ class MyApp extends StatelessWidget {
 
   Route _generateRoute(RouteSettings settings) {
     final String routeName = settings.name;
+    final int categoryId = settings.arguments as int;
     switch (routeName) {
       case CategoryScreen.routeName:
-        return SlideRightRoute(page: CategoryScreen());
+        return SlideRightRoute(
+          page: CategoryScreen(categoryId),
+        );
     }
   }
 }

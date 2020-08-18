@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mafrashi/language/app_loacl.dart';
+import 'package:mafrashi/providers/auth.dart';
 import 'package:mafrashi/providers/change_language_provider.dart';
 import 'package:mafrashi/providers/profile.dart';
 import 'package:mafrashi/screens/auth_screen.dart';
@@ -80,14 +81,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       bool result = await Provider.of<ProfileProvider>(context, listen: false)
           .editProfile(
-          _authData['first_name'],
-          _authData['last_name'],
-          _authData['email'],
-          _authData['gender'],
-          _authData['password'],
-          _authData['password'],
-          _authData['phone'],
-          _authData['date_of_birth']);
+              _authData['first_name'],
+              _authData['last_name'],
+              _authData['email'],
+              _authData['gender'],
+              _authData['password'],
+              _authData['password'],
+              _authData['phone'],
+              _authData['date_of_birth']);
       if (result) _showSignUpSuccessfully();
     } catch (error) {
       const errorMessage =
@@ -103,19 +104,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (ctx) =>
-          AlertDialog(
-            title: Text('An Error Occurred!'),
-            content: Text(message),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              )
-            ],
-          ),
+      builder: (ctx) => AlertDialog(
+        title: Text('An Error Occurred!'),
+        content: Text(message),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
     );
   }
 
@@ -160,18 +160,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     ).show();
   }
-void _showLogoutDialog(){
-  showDialog<void>(
+
+  void _showLogoutDialog() {
+    showDialog<void>(
       context: context,
       barrierDismissible: true,
       // false = user must tap button, true = tap outside dialog
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text(AppLocalizations.of(context).translate('log_out')),
-          content: Text('dialogBody'),
           actions: <Widget>[
             FlatButton(
-              child: Text('buttonText'),
+              child: Text(AppLocalizations.of(context).translate('log_out')),
+              onPressed: () {
+                Provider.of<Auth>(context, listen: false).logout().then((_) =>
+                    Navigator.pushReplacementNamed(
+                        context, WelcomePage.routeName));
+              },
+            ),
+            FlatButton(
+              child: Text(AppLocalizations.of(context).translate('cancel')),
               onPressed: () {
                 Navigator.of(dialogContext).pop(); // Dismiss alert dialog
               },
@@ -181,6 +189,7 @@ void _showLogoutDialog(){
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,8 +203,11 @@ void _showLogoutDialog(){
           IconButton(
             icon: Icon(Icons.language),
             onPressed: () => _showDialogChangeLanguage(context),
+          ),
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () => _showLogoutDialog(),
           )
-          ,IconButton(icon: Icon(Icons.exit_to_app),onPressed: ()=>_showLogoutDialog(),)
         ],
       ),
       body: FutureBuilder(
@@ -213,8 +225,7 @@ void _showLogoutDialog(){
                 );
               } else {
                 return Consumer<ProfileProvider>(
-                    builder: (ctx, profile, child) =>
-                        ListView(
+                    builder: (ctx, profile, child) => ListView(
                           children: <Widget>[
                             Form(
                               key: _formKey,
@@ -228,7 +239,7 @@ void _showLogoutDialog(){
                                           if (value.isEmpty) {
                                             return AppLocalizations.of(context)
                                                 .translate(
-                                                'please_enter_first_name');
+                                                    'please_enter_first_name');
                                           }
                                         }),
                                     FormTextField(
@@ -238,7 +249,7 @@ void _showLogoutDialog(){
                                           if (value.isEmpty) {
                                             return AppLocalizations.of(context)
                                                 .translate(
-                                                'please_enter_last_name');
+                                                    'please_enter_last_name');
                                           }
                                         }),
                                     FormTextField(
@@ -281,9 +292,9 @@ void _showLogoutDialog(){
                                             if (value !=
                                                 _passwordController.text) {
                                               return AppLocalizations.of(
-                                                  context)
+                                                      context)
                                                   .translate(
-                                                  'password_not_match');
+                                                      'password_not_match');
                                             }
                                           }),
                                     ),
@@ -305,9 +316,9 @@ void _showLogoutDialog(){
                                           validator: (value) {
                                             if (value.isEmpty) {
                                               return AppLocalizations.of(
-                                                  context)
+                                                      context)
                                                   .translate(
-                                                  'enter_date_of_birth');
+                                                      'enter_date_of_birth');
                                             }
                                           }),
                                     )
@@ -315,7 +326,6 @@ void _showLogoutDialog(){
                                 ),
                               ),
                             ),
-
                           ],
                         ));
               }

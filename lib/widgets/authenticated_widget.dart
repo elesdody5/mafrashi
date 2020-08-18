@@ -38,7 +38,8 @@ class AuthenticatedWidget extends StatelessWidget {
         Provider.of<Auth>(context, listen: false).isAuthenticated;
     return InkWell(
       child: child,
-      onTap: () => isAuthenticated ? onTap : _showAuthenticationAlert(context),
+      onTap: () =>
+          isAuthenticated ? onTap() : _showAuthenticationAlert(context),
     );
   }
 }

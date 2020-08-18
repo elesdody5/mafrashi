@@ -99,7 +99,7 @@ class _AuthScreenState extends State<AuthScreen>
           ),
           onPressed: () {
             Navigator.pop(context);
-            _controller.reverse();
+            _switchAuthMode();
           },
           width: 120,
         )
@@ -160,6 +160,7 @@ class _AuthScreenState extends State<AuthScreen>
       var errorMessage = 'Invalid Email or Password';
       _showErrorDialog(errorMessage);
     } catch (error) {
+      print(error);
       const errorMessage =
           'Could not authenticate you. Please try again later.';
       _showErrorDialog(errorMessage);
@@ -362,6 +363,7 @@ class _AuthScreenState extends State<AuthScreen>
                         ),
                         _buildEmailTextField(),
                         FormTextField(
+                          obscure: true,
                           hint: AppLocalizations.of(context)
                               .translate('password'),
                           controller: _passwordController,
@@ -382,6 +384,7 @@ class _AuthScreenState extends State<AuthScreen>
                           opacityAnimation: _opacityAnimation,
                           slideAnimation: _slideAnimation,
                           child: FormTextField(
+                            obscure: true,
                             hint: AppLocalizations.of(context)
                                 .translate('confirm_password'),
                             validator: _authMode == AuthMode.Signup
@@ -417,23 +420,42 @@ class _AuthScreenState extends State<AuthScreen>
                         InkWell(
                           onTap: () => _showPicker(),
                           child: AnimatedInputField(
-                            authMode: _authMode,
-                            opacityAnimation: _opacityAnimation,
-                            slideAnimation: _slideAnimation,
-                            child: FormTextField(
-                              controller: _dateController,
-                              hint: AppLocalizations.of(context)
-                                  .translate('date_of_birth'),
-                              validator: _authMode == AuthMode.Signup
-                                  ? (value) {
-                                      if (value.isEmpty) {
-                                        return AppLocalizations.of(context)
-                                            .translate('enter_date_of_birth');
-                                      }
-                                    }
-                                  : null,
-                            ),
-                          ),
+                              authMode: _authMode,
+                              opacityAnimation: _opacityAnimation,
+                              slideAnimation: _slideAnimation,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    left: 16, right: 16, top: 32, bottom: 8),
+                                child: TextFormField(
+                                  enabled: false,
+                                  controller: _dateController,
+                                  style: TextStyle(fontSize: 18),
+                                  keyboardType: TextInputType.text,
+                                  textCapitalization: TextCapitalization.words,
+                                  decoration: InputDecoration(
+                                    hintText: AppLocalizations.of(context)
+                                        .translate('date_of_birth'),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                  ),
+                                  validator: _authMode == AuthMode.Signup
+                                      ? (value) {
+                                          if (value.isEmpty) {
+                                            return AppLocalizations.of(context)
+                                                .translate(
+                                                    'enter_date_of_birth');
+                                          }
+                                        }
+                                      : null,
+//
+                                ),
+                              )),
                         )
                       ],
                     ),
@@ -444,13 +466,17 @@ class _AuthScreenState extends State<AuthScreen>
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: FlatButton(
-                          child: Text(
-                            AppLocalizations.of(context)
-                                .translate('forget_password'),
-                            style: TextStyle(fontSize: 18, color: Colors.grey),
+                        child: Visibility(
+                          visible: _authMode == AuthMode.Login,
+                          child: FlatButton(
+                            child: Text(
+                              AppLocalizations.of(context)
+                                  .translate('forget_password'),
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.grey),
+                            ),
+                            onPressed: _showForgetPasswordDialog,
                           ),
-                          onPressed: _showForgetPasswordDialog,
                         ),
                       ),
                       Align(

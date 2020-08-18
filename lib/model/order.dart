@@ -5,7 +5,7 @@ import 'cart.dart';
 class Order {
   final String id;
   final double amount;
-  final List<CartItem> products;
+  final List<Cart> products;
   final DateTime dateTime;
 
   Order({

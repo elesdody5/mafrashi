@@ -1,5 +1,5 @@
 class Category {
-  Category({this.id, this.name, this.imageUrl, this.status});
+  Category({this.id, this.name, this.imageUrl, this.status, this.slug});
 
   int id;
   String name;
@@ -9,11 +9,11 @@ class Category {
   String imageUrl;
 
   factory Category.fromJson(Map<String, dynamic> json) => Category(
-        id: json["id"],
-        name: json["name"],
-        status: json["status"],
-        imageUrl: json["image_url"],
-      );
+      id: json["id"],
+      name: json["name"],
+      status: json["status"],
+      imageUrl: json["image_url"],
+      slug: json['slug']);
 
   Map<String, dynamic> toJson() => {
         "id": id,

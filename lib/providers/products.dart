@@ -6,6 +6,7 @@ class ProductsProvider with ChangeNotifier {
   List<Product> _items = [];
   List<Product> _wishList = [];
   List<Product> _productCategory = [];
+
   List<Product> get wishList {
     return [..._wishList];
   }
@@ -26,14 +27,21 @@ class ProductsProvider with ChangeNotifier {
   }
 
   int get selectedCategoryId => _selectedCategoryId;
+
   Future<bool> addToWishList(int productId) async {
     bool result = await _productRepository.addToWishList(productId);
+    print(result);
+    if (result) {
+      _wishList.add(findById(productId));
+    }
     return result;
   }
 
   Future<void> fetchWishList() async {
-    if (_wishList == null) _wishList = await _productRepository.fetchWishList();
-    notifyListeners();
+    if (_wishList.isEmpty) {
+      _wishList = await _productRepository.fetchWishList();
+      notifyListeners();
+    }
   }
 
   Product findById(int id) {
@@ -41,12 +49,14 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetchProducts() async {
-    _items = await _productRepository.fetchProducts();
+    if (_items.isEmpty) _items = await _productRepository.fetchProducts();
     notifyListeners();
   }
 
   Future<void> fetchProductsByCategory(String catSlug) async {
-    _items = await _productRepository.fetchProductsFromCategory(catSlug);
+    if (_productCategory.isEmpty)
+      _productCategory =
+          await _productRepository.fetchProductsFromCategory(catSlug);
     notifyListeners();
   }
 }

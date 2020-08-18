@@ -10,7 +10,8 @@ import 'package:provider/provider.dart';
 
 class CategoryScreen extends StatefulWidget {
   static const routeName = '/category';
-
+  final int categoryId;
+  CategoryScreen(this.categoryId);
   @override
   _CategoryScreenState createState() => _CategoryScreenState();
 }
@@ -34,24 +35,17 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   void _fetchData() async {
-    try {
-      final categoryId = ModalRoute.of(context).settings.arguments as int;
-      final categoryProvider =
-          Provider.of<CategoryProvider>(context, listen: false);
-      Category category = categoryProvider.findCategoryById(categoryId);
-      await categoryProvider.fetchSubCategory(category.slug);
-      await Provider.of<ProductsProvider>(context, listen: false)
-          .fetchProductsByCategory(category.slug);
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (e) {
-      print("products_overview error$e");
-      setState(() {
-        _showError = true;
-        _isLoading = false;
-      });
-    }
+    final categoryId = widget.categoryId;
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    Category category = categoryProvider.findCategoryById(categoryId);
+    print(category.name);
+    await categoryProvider.fetchSubCategory(category.slug);
+    await Provider.of<ProductsProvider>(context, listen: false)
+        .fetchProductsByCategory(category.slug);
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Widget _buildBody() {

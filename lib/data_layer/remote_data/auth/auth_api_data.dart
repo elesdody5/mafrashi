@@ -31,9 +31,10 @@ class AuthApiImp implements AuthApi {
     }
   }
 
-  Future<bool> logout(String email) async {
+  Future<bool> logout(String email, String token) async {
     final url = BASE_URL + LOGOUT + "?email=$email";
-    final response = await http.get(url);
+    _addAuthorizationToHeader(token);
+    final response = await http.get(url, headers: header);
     if (response.statusCode == 200) {
       return true;
     }
@@ -54,6 +55,7 @@ class AuthApiImp implements AuthApi {
     try {
       final response = await http.post(
         url,
+        headers: header,
         body: json.encode({
           "phone": phone,
           "first_name": firstName,
@@ -98,5 +100,9 @@ class AuthApiImp implements AuthApi {
       return (index == -1) ? token : token.substring(0, index);
     }
     return null;
+  }
+
+  void _addAuthorizationToHeader(String token) {
+    header['Cookie'] = 'mafrashi_session=$token';
   }
 }

@@ -1,11 +1,16 @@
 import 'package:flutter/foundation.dart';
-import 'package:mafrashi/widgets/cart_item.dart';
+import 'package:mafrashi/data_layer/repository/products_repository.dart';
+import 'package:mafrashi/model/cart.dart';
 
-class Cart with ChangeNotifier {
-  Map<String, CartItem> _items = {};
+class CartProvider with ChangeNotifier {
+  ProductRepository _productRepository;
 
-  Map<String, CartItem> get items {
-    return {..._items};
+  CartProvider(this._productRepository);
+
+  List<Cart> _items = [];
+
+  List<Cart> get items {
+    return [..._items];
   }
 
   int get itemCount {
@@ -14,50 +19,33 @@ class Cart with ChangeNotifier {
 
   double get totalAmount {
     var total = 0.0;
-    _items.forEach((key, cartItem) {
-      total += cartItem.price * cartItem.quantity;
+    _items.forEach((cartItem) {
+      total += double.parse(cartItem.price) * cartItem.quantity;
     });
     return total;
   }
 
-  void addItem(
-    int productId,
-    String price,
-    String title,
-  ) {
-    if (_items.containsKey(productId)) {
-//      // change quantity...
-//      _items.update(
-//        productId,
-//        (existingCartItem) => CartItem(
-//          id: existingCartItem.id,
-//          title: existingCartItem.title,
-//          price: existingCartItem.price,
-//          quantity: existingCartItem.quantity + 1,
-//        ),
-//      );
-//    } else {
-//      _items.putIfAbsent(
-//        productId,
-//        () => CartItem(
-//          id: DateTime.now().toString(),
-//          title: title,
-//          price: price,
-//          quantity: 1,
-//        ),
-//      );
-//    }
-//    notifyListeners();
+  Future<bool> addItem(int productId, int quantity, int colorId, int sizeId,
+      int variantId) async {
+    try {
+      await _productRepository.addToCart(
+          productId, quantity, colorId, sizeId, variantId);
+      return true;
+    } catch (error) {
+      print(error);
+      return false;
+    } finally {
+      notifyListeners();
     }
   }
 
-  void removeItem(String productId) {
-    _items.remove(productId);
+  void removeItem(int productId) {
+    _items.removeWhere((cart) => cart.id == productId);
     notifyListeners();
   }
 
   void removeSingleItem(int productId) {
-    if (!_items.containsKey(productId)) {
+    if (!_items.contains(productId)) {
       return;
     }
     if (_items[productId].quantity > 1) {
@@ -75,8 +63,13 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> fetchCartItems() async {
+    _items = await _productRepository.fetchCartList();
+    notifyListeners();
+  }
+
   void clear() {
-    _items = {};
+    _items = [];
     notifyListeners();
   }
 }

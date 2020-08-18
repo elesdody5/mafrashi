@@ -15,7 +15,8 @@ import 'fake_user_manger.dart';
 
 String _email = "eles@ele.com";
 String password = "password";
-String _token;
+String _token =
+    "eyJpdiI6Ik93MWZNRWxGaE9kSFp6NTFTeW9VV3c9PSIsInZhbHVlIjoib00wZWsrYkxLMVF1c0dSbEVSemdhUk4xRDdRajB5UHU2VTZrSzJUR25UQnJ4ODRsamQybTZWblVCdkV4UVczRiIsIm1hYyI6ImVmMzgxMjVhMTkyZWQzZTQyNjA1MDY5Y2ZiNTBkZTE1MjkxYThmNDQzYWQwMzIzMTI3MTQwNDEwNTRkNTM3ZTgifQ";
 
 UserManager fakeUserManger =
     FakeUserManager(email: _email, token: _token, password: password);
@@ -43,6 +44,10 @@ void main() {
 
     String token = await fakeUserManger.getToken();
     expect(token.isNotEmpty, true);
+  });
+  test('logout user ', () async {
+    bool result = await authRepository.logout();
+    expect(result, true);
   });
   test('login  user throws exception if not found', () {
     expect(authRepository.login("mohamed", "pass"), throwsA(Exception));

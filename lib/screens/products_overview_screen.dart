@@ -40,8 +40,8 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   void _fetchData() async {
     try {
-//      await Provider.of<ProductsProvider>(context, listen: false)
-//          .fetchWishList();
+      await Provider.of<ProductsProvider>(context, listen: false)
+          .fetchWishList();
       await Provider.of<CategoryProvider>(context, listen: false)
           .fetchCategories();
       await Provider.of<ProductsProvider>(context, listen: false)
@@ -95,7 +95,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             style: TextStyle(color: Colors.white),
           ),
           actions: <Widget>[
-            Consumer<Cart>(
+            Consumer<CartProvider>(
               builder: (_, cart, ch) => Badge(
                 child: ch,
                 value: cart.itemCount.toString(),
@@ -106,7 +106,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                     color: Colors.white,
                   ),
                   onTap: () =>
-                      Navigator.of(context).pushNamed(CartScreen.routeName)),
+                      Navigator.pushNamed(context, CartScreen.routeName)),
             ),
           ],
         ),

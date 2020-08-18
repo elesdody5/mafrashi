@@ -20,7 +20,8 @@ class AuthRepositoryImp with ChangeNotifier implements AuthRepository {
   @override
   Future<bool> logout() async {
     String email = await _userManager.getUserEmail();
-    bool result = await _remoteDataSource.logout(email);
+    String token = await _userManager.getToken();
+    bool result = await _remoteDataSource.logout(email, token);
     if (result) _userManager.deleteUserData();
     return result;
   }

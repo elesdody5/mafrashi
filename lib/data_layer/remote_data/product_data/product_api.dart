@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:mafrashi/data_layer/remote_data/apis/auth_api_urls.dart';
 import 'package:mafrashi/data_layer/remote_data/apis/product_api_urls.dart';
 import 'package:mafrashi/data_layer/remote_data/product_data/product_interface.dart';
+import 'package:mafrashi/model/cart.dart';
 import 'package:mafrashi/model/category.dart';
 import 'package:mafrashi/model/product.dart';
 import 'package:mafrashi/model/sub_category.dart';
@@ -55,7 +56,7 @@ class ProductApi implements RemoteDataSource {
   Future<bool> addToWishList(int productId, String token) async {
     var url = BASE_URL + ADD_WISHLIST + '$productId';
     _addAuthorizationToHeader(token);
-    final response = await http.get(url);
+    final response = await http.get(url, headers: header);
     if (response.statusCode == 200) {
       return true;
     }
@@ -86,6 +87,7 @@ class ProductApi implements RemoteDataSource {
 
   @override
   Future<List<Product>> fetchProductsFromCategory(String categorySlug) async {
+    print(categorySlug);
     var url = BASE_URL + PRODUCT_CATEGORY + categorySlug;
     List<Product> productList = [];
     try {
@@ -95,9 +97,9 @@ class ProductApi implements RemoteDataSource {
         return productList;
       }
       final data = responseData['data'];
-
-      data.forEach(
-          (productJson) => productList.add(Product.fromJson(productJson)));
+      if (data != null)
+        data.forEach(
+            (productJson) => productList.add(Product.fromJson(productJson)));
       return productList;
     } catch (error) {
       throw HttpException(error.toString(), uri: Uri.parse(url));
@@ -110,19 +112,61 @@ class ProductApi implements RemoteDataSource {
     _addAuthorizationToHeader(token);
     List<Product> productList = [];
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: header);
       final responseData = json.decode(response.body) as Map<String, dynamic>;
       if (responseData == null) {
         return productList;
       }
       final data = responseData['data'];
-
-      data.forEach(
-          (productJson) => productList.add(Product.fromJson(productJson)));
+      if (data != null) {
+        data.forEach((productJson) =>
+            productList.add(Product.fromJson(productJson['product'])));
+      }
       return productList;
     } catch (error) {
       throw (error);
     }
+  }
+
+  @override
+  Future<bool> addToCart(String token, int productId, int quantity, int colorId,
+      int sizeId, int variantId) async {
+    var url = BASE_URL + ADD_CART + '$productId';
+    _addAuthorizationToHeader(token);
+    try {
+      final response = await http.post(url,
+          headers: header,
+          body: json.encode({
+            "quantity": quantity,
+            "product_id": productId,
+            "color": colorId,
+            "size": sizeId,
+            "selected_configurable_option": variantId
+          }));
+      final responseData = jsonDecode(response.body) as Map<String, dynamic>;
+      if (response.statusCode == 200 && responseData['error'] == null)
+        return true;
+    } catch (error) {
+      throw (error);
+    }
+    return false;
+  }
+
+  @override
+  Future<List<Cart>> fetchCartList(String token) async {
+    var url = BASE_URL + CART_ITEM;
+    _addAuthorizationToHeader(token);
+    List<Cart> cartList = [];
+
+    final response = await http.get(url, headers: header);
+    final responseData = json.decode(response.body) as Map<String, dynamic>;
+    if (responseData == null) {
+      return cartList;
+    }
+    final data = responseData['data']['items'];
+
+    data.forEach((cartJson) => cartList.add(Cart.fromJson(cartJson)));
+    return cartList;
   }
 
   void _addAuthorizationToHeader(String token) {

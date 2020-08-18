@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:mafrashi/data_layer/repository/repository.dart';
-import 'package:mafrashi/model/user.dart';
 
 class Auth with ChangeNotifier {
   bool _isAuthenticated = false;
@@ -46,6 +45,7 @@ class Auth with ChangeNotifier {
 
   Future<void> logout() async {
     await _authRepository.logout();
+
     _isAuthenticated = false;
   }
 

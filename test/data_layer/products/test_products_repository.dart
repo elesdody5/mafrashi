@@ -11,8 +11,8 @@ import '../auth/fake_user_manger.dart';
 
 String _email = "eles@ele.com";
 String _token =
-    "eyJpdiI6IlhwTlVFbW5pcjNYUnE3MzJrcDdTWEE9PSIsInZhbHVlIjoiRDhlZm1PR1h1anNXeTFUOWJuNWdQUjN3dW16emhxNHhYbVFlSFh3a29jS0M0ZnR1aHNmalNXRHFzM0RYbUFSdyIsIm1hYyI6Ijg5ZWRjNzAyOWFmMmUxN2ZlNzVlNzc0MjdmNzBiZDA5NjIxMWYxNGJmNmE4ZWY1NzA0ZGMzNThhMjdkNzJhNzkifQ";
-UserManager fakeUserManger = FakeUserManager(email:_email, token: _token);
+    "eyJpdiI6InlWM3F1aEIzbldlVUM4VVR5YlM3TWc9PSIsInZhbHVlIjoiOFdXc3Z3ZHV0WmNOK0lXRUtYMDRocGp0bU5QZHp5aEFOZEQzUzFGUGpBUWtUanVZRHBIeExcLzdkbk9iaHowTGQiLCJtYWMiOiIyYjk0NGYxZTBkMDAzMDM5YmMwNDBkMWEyYmZmNWRmZDkwMWRlNWMyZDEyNDI5NjM3ZmFlZjAyMzcyYzk2ZThkIn0";
+UserManager fakeUserManger = FakeUserManager(email: _email, token: _token);
 RemoteDataSource _remoteDataSource = ProductApi();
 Repository productRepository =
     ProductRepository(_remoteDataSource, fakeUserManger);
@@ -23,9 +23,14 @@ void main() {
 
     expect(productList.isNotEmpty, true);
   });
+  test('fetch product and get non null colors ', () async {
+    List<Product> productList = await productRepository.fetchProducts();
+    print(productList[0].colors[0].name);
+    expect(productList[0].colors[0].name, "red");
+  });
   test('fetch category expected not empty list', () async {
     List<Category> categoryList = await productRepository.fetchCategory();
-
+    print(categoryList[0].slug);
     expect(categoryList.isNotEmpty, true);
   });
 
@@ -40,5 +45,17 @@ void main() {
   test("fetch sub category from category", () async {
     final list = await productRepository.fetchSubCategories("1");
     expect(list.isNotEmpty, true);
+  });
+  test("fetch wish list ", () async {
+    final list = await productRepository.fetchWishList();
+    expect(list.isNotEmpty, true);
+  });
+  test('add product to cart ', () async {
+    final message = await productRepository.addToCart(3, 1, 2, 4, 13);
+    expect(message, true);
+  });
+  test('fetch cart list ', () async {
+    final cartList = await productRepository.fetchCartList();
+    expect(cartList.isNotEmpty, true);
   });
 }
