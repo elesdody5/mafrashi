@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class FormTextField extends StatelessWidget {
   final Function validator;
   final hint;
+  final value;
   final TextEditingController controller;
   final Function save;
   final enable;
@@ -12,6 +13,7 @@ class FormTextField extends StatelessWidget {
       {this.hint,
       this.validator,
       this.controller,
+      this.value,
       this.save,
       this.enable = true,
       this.obscure = false});
@@ -21,6 +23,7 @@ class FormTextField extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(left: 16, right: 16, top: 32, bottom: 8),
       child: TextFormField(
+        initialValue: value,
         obscureText: obscure,
         enabled: enable,
         controller: controller,

@@ -35,8 +35,9 @@ class Product {
     List<ProductSize> sizes = [];
     List<ProductVariant> variants = [];
     final variantsJson = json['variants'];
-    variantsJson
-        .forEach((variant) => variants.add(ProductVariant.fromJson(variant)));
+    if (variantsJson != null)
+      variantsJson
+          .forEach((variant) => variants.add(ProductVariant.fromJson(variant)));
     if (json.containsKey("super_attributes")) {
       final superAttributes = json['super_attributes'] as List<dynamic>;
       final colorJson = json['super_attributes'][0]['options'];

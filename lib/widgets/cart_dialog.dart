@@ -21,7 +21,7 @@ class _CartDialogState extends State<CartDialog> {
 
   ProductVariant _currentVariant;
   ProductSize _currentSize;
-  int _quantity = 0;
+  int _quantity = 1;
 
   Widget _buildVariantsDropDown(
     List<ProductVariant> listItem,
@@ -114,22 +114,44 @@ class _CartDialogState extends State<CartDialog> {
     });
   }
 
-  void _showAddedSuccessfully() {
+  void _showAddedSuccessfully(BuildContext context) {
     Alert(
-      context: context,
-      type: AlertType.success,
-      title: AppLocalizations.of(context).translate('added_cart'),
-      style: AlertStyle(isCloseButton: false),
-    ).show();
+        context: context,
+        type: AlertType.success,
+        title: AppLocalizations.of(context).translate('added_cart'),
+        style: AlertStyle(isCloseButton: false),
+        buttons: [
+          DialogButton(
+            child: Text(
+              AppLocalizations.of(context).translate('continue'),
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            width: 120,
+          )
+        ]).show();
   }
 
   void _showErrorAlert() {
     Alert(
-      context: context,
-      type: AlertType.error,
-      title: 'something_went_wrong',
-      style: AlertStyle(isCloseButton: false),
-    ).show();
+        context: context,
+        type: AlertType.error,
+        title: 'something_went_wrong',
+        style: AlertStyle(isCloseButton: false),
+        buttons: [
+          DialogButton(
+            child: Text(
+              AppLocalizations.of(context).translate('continue'),
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            width: 120,
+          )
+        ]).show();
   }
 
   Future<void> _submit(BuildContext context) async {
@@ -145,15 +167,14 @@ class _CartDialogState extends State<CartDialog> {
       // remove current dialog
       Navigator.pop(context);
 
-      result ? _showAddedSuccessfully() : _showErrorAlert();
+      result ? _showAddedSuccessfully(context) : _showErrorAlert();
     }
   }
 
   bool _validate() {
     return _currentVariant != null &&
         _currentSize != null &&
-        _currentColor != null &&
-        _quantity != 0;
+        _currentColor != null;
   }
 
   @override
@@ -190,7 +211,7 @@ class _CartDialogState extends State<CartDialog> {
                       child: SizedBox(
                           width: 56, height: 56, child: Icon(Icons.remove)),
                       onTap: () {
-                        if (_quantity > 0) {
+                        if (_quantity > 1) {
                           setState(() {
                             _quantity--;
                           });

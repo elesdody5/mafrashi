@@ -11,7 +11,7 @@ import '../auth/fake_user_manger.dart';
 
 String _email = "eles@ele.com";
 String _token =
-    "eyJpdiI6InlWM3F1aEIzbldlVUM4VVR5YlM3TWc9PSIsInZhbHVlIjoiOFdXc3Z3ZHV0WmNOK0lXRUtYMDRocGp0bU5QZHp5aEFOZEQzUzFGUGpBUWtUanVZRHBIeExcLzdkbk9iaHowTGQiLCJtYWMiOiIyYjk0NGYxZTBkMDAzMDM5YmMwNDBkMWEyYmZmNWRmZDkwMWRlNWMyZDEyNDI5NjM3ZmFlZjAyMzcyYzk2ZThkIn0";
+    "eyJpdiI6IjZkTG95bmUxcGEwT05EV0JFdng0U3c9PSIsInZhbHVlIjoiYnBpYzRRcFJwQldyc2JuTzRPSTdpK1BqUVk1ZWNtXC9GSGRBbjhmY1d0YkxHcmhWVFBTNnNXT1krUTFEUXA5b1QiLCJtYWMiOiJhN2FkYjc1YTBiOTc1MGJjYWM2OTkzYWM0ZDcxZGYwNDFiN2QwOWRmNjQ4YjI4ZjA4ZDNmMzFmZTllNTRhNWE3In0%3D";
 UserManager fakeUserManger = FakeUserManager(email: _email, token: _token);
 RemoteDataSource _remoteDataSource = ProductApi();
 Repository productRepository =
@@ -38,13 +38,19 @@ void main() {
     bool result = await productRepository.addToWishList(5);
     expect(result, true);
   });
+
   test("fetch product according to category", () async {
-    final list = await productRepository.fetchProductsFromCategory("mlayat");
+    final list = await productRepository.fetchProductsFromCategory("segad");
     expect(list.isNotEmpty, true);
   });
   test("fetch sub category from category", () async {
     final list = await productRepository.fetchSubCategories("1");
     expect(list.isNotEmpty, true);
+  });
+
+  test('fetch product by id ', () async {
+    final product = await _remoteDataSource.fetchProductById(12);
+    expect(product != null, true);
   });
   test("fetch wish list ", () async {
     final list = await productRepository.fetchWishList();
@@ -57,5 +63,9 @@ void main() {
   test('fetch cart list ', () async {
     final cartList = await productRepository.fetchCartList();
     expect(cartList.isNotEmpty, true);
+  });
+  test('remove cart Item ', () async {
+    final result = await productRepository.removeFromCart(88);
+    expect(result, true);
   });
 }

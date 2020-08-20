@@ -21,7 +21,7 @@ class Cart {
   factory Cart.fromJson(Map<String, dynamic> json) {
     return Cart(
         id: json['id'],
-        productId: json['additional']['product_id'],
+        productId: json['id'],
         title: json['name'],
         quantity: json['additional']['quantity'],
         price: json['price']);

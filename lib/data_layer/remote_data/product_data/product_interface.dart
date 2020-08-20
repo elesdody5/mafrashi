@@ -5,6 +5,7 @@ import 'package:mafrashi/model/sub_category.dart';
 
 abstract class RemoteDataSource {
   Future<List<Product>> fetchProducts();
+  Future<Product> fetchProductById(int productId);
   Future<List<Category>> fetchCategory();
   Future<bool> addToWishList(int productId, String token);
   Future<List<Product>> fetchWishList(String token);
@@ -13,4 +14,8 @@ abstract class RemoteDataSource {
   Future<bool> addToCart(String token, int productId, int quantity, int colorId,
       int sizeId, int variantId);
   Future<List<Cart>> fetchCartList(String toke);
+  Future<bool> removeFromCart(String toke, int productId);
+  Future<bool> checkOut(String token);
+  Future<bool> removeCartItems(String token);
+  Future<String> addCoupon(String token, int code);
 }

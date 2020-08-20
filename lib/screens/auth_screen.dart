@@ -45,6 +45,7 @@ class _AuthScreenState extends State<AuthScreen>
 
   final _passwordController = TextEditingController();
   final _dateController = TextEditingController();
+  final _emailController = TextEditingController();
   AnimationController _controller;
 
   Animation<Offset> _slideAnimation;
@@ -203,7 +204,7 @@ class _AuthScreenState extends State<AuthScreen>
       _isLoading = true;
     });
     String message = await Provider.of<Auth>(context, listen: false)
-        .forgetPassword(_authData['email']);
+        .forgetPassword(_emailController.text);
     _key.currentState.showSnackBar(SnackBar(
       content: Text(message),
       elevation: 2,
@@ -223,7 +224,10 @@ class _AuthScreenState extends State<AuthScreen>
         buttons: [
           DialogButton(
             child: _isLoading ? CircularProgressIndicator : Text("Submit"),
-            onPressed: _forgetPassword,
+            onPressed: () {
+              Navigator.pop(context);
+              _forgetPassword();
+            },
           )
         ]).show();
   }
@@ -231,6 +235,7 @@ class _AuthScreenState extends State<AuthScreen>
   Widget _buildEmailTextField() {
     return FormTextField(
       hint: "E-mail",
+      controller: _emailController,
       validator: _authMode == AuthMode.Signup
           ? (value) {
               if (value.isEmpty || !value.contains('@')) {

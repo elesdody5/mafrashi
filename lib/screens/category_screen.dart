@@ -20,6 +20,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   var _isInit = true;
   var _isLoading = false;
   var _showError = false;
+  Category _category;
 
   @override
   void didChangeDependencies() {
@@ -38,11 +39,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
     final categoryId = widget.categoryId;
     final categoryProvider =
         Provider.of<CategoryProvider>(context, listen: false);
-    Category category = categoryProvider.findCategoryById(categoryId);
-    print(category.name);
-    await categoryProvider.fetchSubCategory(category.slug);
+    _category = categoryProvider.findCategoryById(categoryId);
+    await categoryProvider.fetchSubCategory(_category.slug);
     await Provider.of<ProductsProvider>(context, listen: false)
-        .fetchProductsByCategory(category.slug);
+        .fetchProductsByCategory(_category.slug);
     setState(() {
       _isLoading = false;
     });
@@ -60,22 +60,21 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    AppLocalizations.of(context).translate('categories'),
+                    AppLocalizations.of(context).translate('sub_category'),
                     style: Theme.of(context).textTheme.title,
                   ),
                 ),
                 Flexible(flex: 1, child: SubCategoryGrid()),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                      AppLocalizations.of(context).translate('all_products'),
+                  child: Text(_category.name,
                       style: Theme.of(context).textTheme.title),
                 ),
                 Flexible(
                     flex: 4,
                     child: Consumer<ProductsProvider>(
                         builder: (_, products, ch) =>
-                            ProductsGrid(products.items)))
+                            ProductsGrid(products.productCategory)))
               ]);
   }
 

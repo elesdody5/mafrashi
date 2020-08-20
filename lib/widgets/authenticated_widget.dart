@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mafrashi/providers/auth.dart';
+import 'package:mafrashi/screens/auth_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -25,7 +26,7 @@ class AuthenticatedWidget extends StatelessWidget {
             "Login",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pushNamed(context, AuthScreen.routeName),
           width: 120,
         )
       ],

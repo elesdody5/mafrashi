@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mafrashi/language/app_loacl.dart';
 import 'package:mafrashi/model/cart.dart';
 import 'package:provider/provider.dart';
 
@@ -30,19 +31,20 @@ class CartItem extends StatelessWidget {
         return showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text('Are you sure?'),
+            title: Text(AppLocalizations.of(context).translate('are_you_sure')),
             content: Text(
-              'Do you want to remove the item from the cart?',
+              AppLocalizations.of(context)
+                  .translate('do_you_to_remove_item_cart'),
             ),
             actions: <Widget>[
               FlatButton(
-                child: Text('No'),
+                child: Text(AppLocalizations.of(context).translate('no')),
                 onPressed: () {
                   Navigator.of(ctx).pop(false);
                 },
               ),
               FlatButton(
-                child: Text('Yes'),
+                child: Text(AppLocalizations.of(context).translate('yes')),
                 onPressed: () {
                   Navigator.of(ctx).pop(true);
                 },
@@ -66,9 +68,6 @@ class CartItem extends StatelessWidget {
             leading: CircleAvatar(
               child: Padding(
                 padding: EdgeInsets.all(5),
-                child: FittedBox(
-                  child: Text('\$price'),
-                ),
               ),
             ),
             title: Text(_cart.title),

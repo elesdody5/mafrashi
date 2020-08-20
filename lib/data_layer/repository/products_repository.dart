@@ -59,4 +59,22 @@ class ProductRepository with ChangeNotifier implements Repository {
     String token = await _userManager.getToken();
     return await _remoteDataSource.fetchCartList(token);
   }
+
+  @override
+  Future<bool> checkOut() async {
+    String token = await _userManager.getToken();
+    return await _remoteDataSource.checkOut(token);
+  }
+
+  @override
+  Future<bool> removeFromCart(int productId) async {
+    String token = await _userManager.getToken();
+    return await _remoteDataSource.removeFromCart(token, productId);
+  }
+
+  @override
+  Future<String> addCoupon(int code) async {
+    String token = await _userManager.getToken();
+    return await _remoteDataSource.addCoupon(token, code);
+  }
 }

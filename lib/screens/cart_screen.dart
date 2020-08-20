@@ -1,7 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mafrashi/language/app_loacl.dart';
 import 'package:mafrashi/providers/cart.dart';
+import 'package:mafrashi/providers/orders.dart';
+import 'package:mafrashi/widgets/dialog_style.dart';
+import 'package:mafrashi/widgets/form_text_field.dart';
 import 'package:provider/provider.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../widgets/cart_item.dart';
 
@@ -32,14 +37,15 @@ class CartScreen extends StatelessWidget {
                     builder: (_, cartProvider, child) {
                   if (cartProvider.items.isEmpty) {
                     return Center(
-                      child: GridTile(
-                        child: Image.asset('assets/images/shopping-cart.png'),
-                        footer: Text(AppLocalizations.of(context)
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                        Image.asset('assets/images/shopping-cart.png'),
+                        Text(AppLocalizations.of(context)
                             .translate('empty_cart')),
-                      ),
+                      ]),
                     );
                   } else {
                     return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                         Card(
                           margin: EdgeInsets.all(15),
@@ -67,7 +73,7 @@ class CartScreen extends StatelessWidget {
                                   backgroundColor:
                                       Theme.of(context).primaryColor,
                                 ),
-                                OrderButton(cart: cart)
+                                CouponButton(cart: cart)
                               ],
                             ),
                           ),
@@ -80,6 +86,9 @@ class CartScreen extends StatelessWidget {
                               cart.items[i],
                             ),
                           ),
+                        ),
+                        OrderButton(
+                          cart: cart,
                         )
                       ],
                     );
@@ -88,6 +97,86 @@ class CartScreen extends StatelessWidget {
               }
             }
           }),
+    );
+  }
+}
+
+class CouponButton extends StatefulWidget {
+  const CouponButton({
+    Key key,
+    @required this.cart,
+  }) : super(key: key);
+
+  final CartProvider cart;
+  @override
+  _couponButtonState createState() => _couponButtonState();
+}
+
+class _couponButtonState extends State<CouponButton> {
+  var _isLoading = false;
+  final _codeController = TextEditingController();
+
+  void _showCodeDialog() {
+    Alert(
+        context: context,
+        style: alertStyle,
+        title: AppLocalizations.of(context).translate('add_coupon'),
+        content: _buildEmailTextField(),
+        buttons: [
+          DialogButton(
+            child: _isLoading ? CircularProgressIndicator : Text("Submit"),
+            onPressed: () {
+              Navigator.pop(context);
+              sendCode();
+            },
+          )
+        ]).show();
+  }
+
+  Widget _buildEmailTextField() {
+    return FormTextField(
+      hint: "Code",
+      controller: _codeController,
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Invalid Code!';
+        }
+      },
+    );
+  }
+
+  Future<void> sendCode() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String message = await Provider.of<CartProvider>(context, listen: false)
+        .addCoupon(int.parse(_codeController.text));
+    setState(() {
+      _isLoading = false;
+    });
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+        ),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return FlatButton(
+      child: _isLoading
+          ? CircularProgressIndicator()
+          : Text(
+              AppLocalizations.of(context).translate('add_coupon'),
+            ),
+      onPressed: () {
+        _showCodeDialog();
+      },
+      textColor: Theme.of(context).primaryColor,
     );
   }
 }
@@ -106,27 +195,51 @@ class OrderButton extends StatefulWidget {
 
 class _OrderButtonState extends State<OrderButton> {
   var _isLoading = false;
+  void _showSuccessfully() {
+    Alert(
+      context: context,
+      type: AlertType.success,
+      title: AppLocalizations.of(context).translate('order_submit'),
+      style: AlertStyle(isCloseButton: false),
+      buttons: [
+        DialogButton(
+          child: Text(
+            AppLocalizations.of(context).translate('continue'),
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          width: 120,
+        )
+      ],
+    ).show();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
-      child: _isLoading ? CircularProgressIndicator() : Text('ORDER NOW'),
-//      onPressed: (widget.cart.totalAmount <= 0 || _isLoading)
-//          ? null
-//          : () async {
-//              setState(() {
-//                _isLoading = true;
-//              });
-//              await Provider.of<Orders>(context, listen: false).addOrder(
-//                widget.cart.items.values.toList(),
-//                widget.cart.totalAmount,
-//              );
-//              setState(() {
-//                _isLoading = false;
-//              });
-//              widget.cart.clear();
-//            },
-      textColor: Theme.of(context).primaryColor,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: CupertinoButton(
+        color: Theme.of(context).accentColor,
+        child: _isLoading
+            ? CircularProgressIndicator()
+            : Text(AppLocalizations.of(context).translate('order')),
+        onPressed: (widget.cart.totalAmount <= 0 || _isLoading)
+            ? null
+            : () async {
+                setState(() {
+                  _isLoading = true;
+                });
+                await Provider.of<Orders>(context, listen: false).addOrder();
+
+                setState(() {
+                  _isLoading = false;
+                });
+                _showSuccessfully();
+                widget.cart.clear();
+              },
+      ),
     );
   }
 }

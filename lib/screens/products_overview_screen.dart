@@ -40,10 +40,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   void _fetchData() async {
     try {
-      await Provider.of<ProductsProvider>(context, listen: false)
-          .fetchWishList();
-      await Provider.of<CategoryProvider>(context, listen: false)
-          .fetchCategories();
+      Provider.of<CartProvider>(context, listen: false).fetchCartItems();
+      Provider.of<ProductsProvider>(context, listen: false).fetchWishList();
+      Provider.of<CategoryProvider>(context, listen: false).fetchCategories();
       await Provider.of<ProductsProvider>(context, listen: false)
           .fetchProducts();
       setState(() {

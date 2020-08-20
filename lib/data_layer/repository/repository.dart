@@ -33,6 +33,9 @@ abstract class Repository {
   Future<bool> addToCart(
       int productId, int quantity, int colorId, int sizeId, int variantId);
   Future<List<Cart>> fetchCartList();
+  Future<bool> removeFromCart(int productId);
+  Future<bool> checkOut();
+  Future<String> addCoupon(int code);
 }
 
 abstract class ProfileRepository {

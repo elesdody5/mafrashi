@@ -7,6 +7,10 @@ class ProductsProvider with ChangeNotifier {
   List<Product> _wishList = [];
   List<Product> _productCategory = [];
 
+  List<Product> get productCategory {
+    return [..._productCategory];
+  }
+
   List<Product> get wishList {
     return [..._wishList];
   }
@@ -30,10 +34,14 @@ class ProductsProvider with ChangeNotifier {
 
   Future<bool> addToWishList(int productId) async {
     bool result = await _productRepository.addToWishList(productId);
-    print(result);
     if (result) {
       _wishList.add(findById(productId));
+    } else {
+      Product product =
+          _wishList.firstWhere((product) => product.id == productId);
+      _wishList.remove(product);
     }
+    notifyListeners();
     return result;
   }
 
@@ -42,6 +50,15 @@ class ProductsProvider with ChangeNotifier {
       _wishList = await _productRepository.fetchWishList();
       notifyListeners();
     }
+  }
+
+  bool isFavourite(int productId) {
+    Product product = _wishList.firstWhere((product) => product.id == productId,
+        orElse: () => null);
+    if (product != null)
+      return true;
+    else
+      return false;
   }
 
   Product findById(int id) {
@@ -54,9 +71,8 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetchProductsByCategory(String catSlug) async {
-    if (_productCategory.isEmpty)
-      _productCategory =
-          await _productRepository.fetchProductsFromCategory(catSlug);
+    _productCategory =
+        await _productRepository.fetchProductsFromCategory(catSlug);
     notifyListeners();
   }
 }

@@ -11,6 +11,7 @@ import 'package:mafrashi/data_layer/repository/user_repository.dart';
 import 'package:mafrashi/data_layer/shared_prefrences/user_manager.dart';
 import 'package:mafrashi/data_layer/shared_prefrences/user_manager_interface.dart';
 import 'package:mafrashi/providers/category_provider.dart';
+import 'package:mafrashi/providers/orders.dart';
 import 'package:mafrashi/providers/products.dart';
 import 'package:mafrashi/providers/profile.dart';
 import 'package:mafrashi/screens/auth_screen.dart';
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
   final RemoteDataSource _remoteDataSource = ProductApi();
   final AuthApi _authApi = AuthApiImp();
   final ProfileApi _profileApi = ProfileApiImp();
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -86,13 +88,9 @@ class MyApp extends StatelessWidget {
             update: (ctx, productRepo, previousCart) => previousCart == null
                 ? CartProvider(productRepo)
                 : previousCart),
-//        ChangeNotifierProxyProvider<Auth, Orders>(
-//          builder: (ctx, auth, previousOrders) => Orders(
-//            auth.token,
-//            auth.userId,
-//            previousOrders == null ? [] : previousOrders.orders,
-//          ),
-//        ),
+        ChangeNotifierProxyProvider<ProductRepository, Orders>(
+            update: (ctx, productRepo, previousOrders) =>
+                previousOrders == null ? Orders(productRepo) : previousOrders),
       ],
       child: Consumer<AppLanguage>(builder: (context, model, child) {
         return MaterialApp(

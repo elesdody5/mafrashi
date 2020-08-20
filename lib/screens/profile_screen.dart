@@ -90,6 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _authData['phone'],
               _authData['date_of_birth']);
       if (result) _showSignUpSuccessfully();
+      print(result);
     } catch (error) {
       const errorMessage =
           'Could not edit your profile. Please try again later.';
@@ -200,14 +201,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icon(!_edit ? Icons.edit : Icons.save),
             onPressed: !_edit ? _switchEdit : _submit,
           ),
-          IconButton(
-            icon: Icon(Icons.language),
-            onPressed: () => _showDialogChangeLanguage(context),
+          PopupMenuButton(
+            onSelected: (value) {
+              value == 0
+                  ? _showDialogChangeLanguage(context)
+                  : _showLogoutDialog();
+            },
+            icon: Icon(
+              Icons.more_vert,
+            ),
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                child: FlatButton.icon(
+                  icon: Icon(
+                    Icons.language,
+                    color: Colors.black,
+                  ),
+                  label: Text(
+                    AppLocalizations.of(context).translate('choose_language'),
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+                value: 0,
+              ),
+              PopupMenuItem(
+                child: FlatButton.icon(
+                    icon: Icon(
+                      Icons.exit_to_app,
+                      color: Colors.black,
+                    ),
+                    label: Text(
+                        AppLocalizations.of(context).translate('log_out'),
+                        style: TextStyle(color: Colors.black))),
+                value: 1,
+              ),
+            ],
           ),
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () => _showLogoutDialog(),
-          )
         ],
       ),
       body: FutureBuilder(
@@ -225,109 +254,126 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               } else {
                 return Consumer<ProfileProvider>(
-                    builder: (ctx, profile, child) => ListView(
-                          children: <Widget>[
-                            Form(
-                              key: _formKey,
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  children: <Widget>[
-                                    FormTextField(
-                                        enable: _edit,
-                                        hint: "${profile.user.firstName}",
-                                        validator: (value) {
-                                          if (value.isEmpty) {
-                                            return AppLocalizations.of(context)
-                                                .translate(
-                                                    'please_enter_first_name');
-                                          }
-                                        }),
-                                    FormTextField(
-                                        enable: _edit,
-                                        hint: profile.user.lastName,
-                                        validator: (value) {
-                                          if (value.isEmpty) {
-                                            return AppLocalizations.of(context)
-                                                .translate(
-                                                    'please_enter_last_name');
-                                          }
-                                        }),
-                                    FormTextField(
-                                      enable: _edit,
-                                      hint: profile.user.email,
-                                      validator: (value) {
-                                        if (value.isEmpty ||
-                                            !value.contains('@')) {
-                                          return 'Invalid email!';
-                                        }
-                                      },
-                                      save: (value) {
-                                        _authData['email'] = value;
-                                      },
-                                    ),
-                                    Visibility(
-                                      visible: _edit,
-                                      child: FormTextField(
-                                        hint: AppLocalizations.of(context)
-                                            .translate('password'),
-                                        controller: _passwordController,
-                                        validator: (value) {
-                                          if (value.isEmpty ||
-                                              value.length < 5) {
-                                            return AppLocalizations.of(context)
-                                                .translate('short_password');
-                                          }
-                                        },
-                                        save: (value) {
-                                          _authData['password'] = value;
-                                        },
-                                      ),
-                                    ),
-                                    Visibility(
-                                      visible: _edit,
-                                      child: FormTextField(
-                                          hint: AppLocalizations.of(context)
-                                              .translate('confirm_password'),
-                                          validator: (value) {
-                                            if (value !=
-                                                _passwordController.text) {
-                                              return AppLocalizations.of(
-                                                      context)
-                                                  .translate(
-                                                      'password_not_match');
-                                            }
-                                          }),
-                                    ),
-                                    FormTextField(
-                                      hint: profile.user.phone,
-                                      validator: (value) =>
-                                          validateMobile(value, context),
-                                      save: (value) {
-                                        _authData['phone'] = value;
-                                      },
-                                    ),
-                                    RadioGroupWidget(_character),
-                                    InkWell(
-                                      onTap: () => _showPicker(),
-                                      child: FormTextField(
-                                          enable: _edit,
-                                          controller: _dateController,
-                                          hint: profile.user.dateOfBirth,
-                                          validator: (value) {
-                                            if (value.isEmpty) {
-                                              return AppLocalizations.of(
-                                                      context)
-                                                  .translate(
-                                                      'enter_date_of_birth');
-                                            }
-                                          }),
-                                    )
-                                  ],
+                    builder: (ctx, profile, child) {
+                  _dateController.text = profile.user.dateOfBirth;
+                  return ListView(
+                    children: <Widget>[
+                      Form(
+                        key: _formKey,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: <Widget>[
+                              FormTextField(
+                                  enable: _edit,
+                                  value: "${profile.user.firstName}",
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return AppLocalizations.of(context)
+                                          .translate('please_enter_first_name');
+                                    }
+                                  }),
+                              FormTextField(
+                                  enable: _edit,
+                                  value: profile.user.lastName,
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return AppLocalizations.of(context)
+                                          .translate('please_enter_last_name');
+                                    }
+                                  }),
+                              FormTextField(
+                                enable: _edit,
+                                value: profile.user.email,
+                                validator: (value) {
+                                  if (value.isEmpty || !value.contains('@')) {
+                                    return 'Invalid email!';
+                                  }
+                                },
+                                save: (value) {
+                                  _authData['email'] = value;
+                                },
+                              ),
+                              Visibility(
+                                visible: _edit,
+                                child: FormTextField(
+                                  obscure: true,
+                                  hint: AppLocalizations.of(context)
+                                      .translate('password'),
+                                  controller: _passwordController,
+                                  validator: (value) {
+                                    if (value.isEmpty || value.length < 5) {
+                                      return AppLocalizations.of(context)
+                                          .translate('short_password');
+                                    }
+                                  },
+                                  save: (value) {
+                                    _authData['password'] = value;
+                                  },
                                 ),
                               ),
-                            ),
-                          ],
-                        ));
+                              Visibility(
+                                visible: _edit,
+                                child: FormTextField(
+                                    obscure: true,
+                                    hint: AppLocalizations.of(context)
+                                        .translate('confirm_password'),
+                                    validator: (value) {
+                                      if (value != _passwordController.text) {
+                                        return AppLocalizations.of(context)
+                                            .translate('password_not_match');
+                                      }
+                                    }),
+                              ),
+                              FormTextField(
+                                enable: _edit,
+                                value: profile.user.phone,
+                                validator: (value) =>
+                                    validateMobile(value, context),
+                                save: (value) {
+                                  _authData['phone'] = value;
+                                },
+                              ),
+                              RadioGroupWidget(_character),
+                              InkWell(
+                                onTap: () => _showPicker(),
+                                child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 16,
+                                        right: 16,
+                                        top: 32,
+                                        bottom: 8),
+                                    child: TextFormField(
+//                                            initialValue:
+//                                                profile.user.dateOfBirth,
+                                      controller: _dateController,
+                                      enabled: false,
+                                      style: TextStyle(fontSize: 18),
+                                      keyboardType: TextInputType.text,
+                                      textCapitalization:
+                                          TextCapitalization.words,
+                                      decoration: InputDecoration(
+                                        labelText: AppLocalizations.of(context)
+                                            .translate('date_of_birth'),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                      ),
+                                    )),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                });
               }
             }
           }),

@@ -20,6 +20,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
   Product _product;
   bool _isInit = true;
   bool _isLoading = false;
+  bool _isFavourite = false;
 
   final double infoHeight = 364.0;
   AnimationController animationController;
@@ -60,17 +61,35 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     setState(() {
       _isLoading = true;
     });
-    bool result = await provider.addToWishList(_product.id);
-    if (result) {
-      Scaffold.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context).translate('added_wish_list'),
+    try {
+      bool result = await provider.addToWishList(_product.id);
+      if (result) {
+        Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).translate('added_wish_list'),
+            ),
+            duration: Duration(seconds: 2),
           ),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    } else {
+        );
+        setState(() {
+          _isFavourite = true;
+        });
+      } else {
+        Scaffold.of(context).hideCurrentSnackBar();
+        Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).translate('remove_from_wish_list'),
+            ),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        setState(() {
+          _isFavourite = false;
+        });
+      }
+    } catch (error) {
       Scaffold.of(context).hideCurrentSnackBar();
       Scaffold.of(context).showSnackBar(
         SnackBar(
@@ -96,6 +115,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     final productId =
         ModalRoute.of(context).settings.arguments as int; // is the id!
     _product = productProvider.findById(productId);
+    _isFavourite = productProvider.isFavourite(productId);
     return Container(
       color: DesignCourseAppTheme.nearlyWhite,
       child: Scaffold(
@@ -153,7 +173,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                               padding: const EdgeInsets.only(
                                   top: 32.0, left: 18, right: 16),
                               child: Text(
-                                _product.name,
+                                _product.name ?? "",
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
@@ -356,15 +376,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                                 ? CircularProgressIndicator(
                                     backgroundColor: Colors.white,
                                   )
-                                : IconButton(
-                                    onPressed: () => _addToWishList(
-                                        productProvider, context),
-                                    icon: Icon(
-                                      Icons.favorite,
-                                      color: DesignCourseAppTheme.nearlyWhite,
-                                      size: 30,
-                                    ),
+                                : Icon(
+                                    _isFavourite
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: DesignCourseAppTheme.nearlyWhite,
+                                    size: 30,
                                   ),
+                            onTap: () =>
+                                _addToWishList(productProvider, context),
                           ),
                         )),
                   ),

@@ -14,6 +14,7 @@ class CartProvider with ChangeNotifier {
   }
 
   int get itemCount {
+    print(_items.length);
     return _items.length;
   }
 
@@ -30,17 +31,23 @@ class CartProvider with ChangeNotifier {
     try {
       await _productRepository.addToCart(
           productId, quantity, colorId, sizeId, variantId);
+      fetchCartItems();
       return true;
     } catch (error) {
       print(error);
       return false;
-    } finally {
-      notifyListeners();
     }
   }
 
-  void removeItem(int productId) {
-    _items.removeWhere((cart) => cart.id == productId);
+  Future<String> addCoupon(int code) async {
+    return await _productRepository.addCoupon(code);
+  }
+
+  void removeItem(int productId) async {
+    print(productId);
+    bool result = await _productRepository.removeFromCart(productId);
+    print(result);
+    if (result) _items.removeWhere((cart) => cart.productId == productId);
     notifyListeners();
   }
 
