@@ -14,7 +14,6 @@ class CartProvider with ChangeNotifier {
   }
 
   int get itemCount {
-    print(_items.length);
     return _items.length;
   }
 
@@ -46,7 +45,6 @@ class CartProvider with ChangeNotifier {
   void removeItem(int productId) async {
     print(productId);
     bool result = await _productRepository.removeFromCart(productId);
-    print(result);
     if (result) _items.removeWhere((cart) => cart.productId == productId);
     notifyListeners();
   }

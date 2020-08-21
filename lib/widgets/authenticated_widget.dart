@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mafrashi/language/app_loacl.dart';
 import 'package:mafrashi/providers/auth.dart';
 import 'package:mafrashi/screens/auth_screen.dart';
 import 'package:provider/provider.dart';
@@ -17,13 +18,13 @@ class AuthenticatedWidget extends StatelessWidget {
     Alert(
       context: context,
       type: AlertType.error,
-      title: "Please Login to continue",
-      desc: "Can't open without login ",
+      title: AppLocalizations.of(context).translate('please_login'),
+      desc: AppLocalizations.of(context).translate("cant_open"),
       style: AlertStyle(isCloseButton: true),
       buttons: [
         DialogButton(
           child: Text(
-            "Login",
+            AppLocalizations.of(context).translate('login'),
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           onPressed: () => Navigator.pushNamed(context, AuthScreen.routeName),

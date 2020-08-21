@@ -55,6 +55,7 @@ class ProfileApiImp implements ProfileApi {
         url,
         headers: header,
         body: json.encode({
+          "_method": "PUT",
           "phone": phone,
           "first_name": firstName,
           "last_name": lastName,
@@ -65,7 +66,10 @@ class ProfileApiImp implements ProfileApi {
           'password_confirmation': password
         }),
       );
-      return true;
+      print(response.body);
+      final responseData = json.decode(response.body);
+      if (responseData['error'] == null) return true;
+      return false;
     } catch (e) {
       return false;
     }

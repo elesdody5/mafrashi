@@ -61,9 +61,9 @@ class ProductRepository with ChangeNotifier implements Repository {
   }
 
   @override
-  Future<bool> checkOut() async {
+  Future<bool> order() async {
     String token = await _userManager.getToken();
-    return await _remoteDataSource.checkOut(token);
+    return await _remoteDataSource.order(token);
   }
 
   @override
@@ -76,5 +76,23 @@ class ProductRepository with ChangeNotifier implements Repository {
   Future<String> addCoupon(int code) async {
     String token = await _userManager.getToken();
     return await _remoteDataSource.addCoupon(token, code);
+  }
+
+  @override
+  Future<List<String>> countries() async {
+    String token = await _userManager.getToken();
+    return await _remoteDataSource.getCountries(token);
+  }
+
+  @override
+  Future<bool> saveAddress(Map<String, dynamic> shippingAddress) async {
+    String token = await _userManager.getToken();
+    return await _remoteDataSource.saveAddress(token, shippingAddress);
+  }
+
+  @override
+  Future<bool> saveShipping() {
+    // TODO: implement saveShipping
+    return null;
   }
 }

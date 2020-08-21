@@ -182,21 +182,22 @@ class ProductApi implements RemoteDataSource {
   }
 
   @override
-  Future<bool> checkOut(String token) async {
+  Future<bool> order(String token) async {
     var url = BASE_URL + CHECK_OUT_ORDER;
     _addAuthorizationToHeader(token);
-    final response = await http.post(url,
-        headers: header,
-        body: json.encode({"shipping_method": "flatrate_flatrate"}));
-    if (response.statusCode == 200) {
-      // remove all product from cart after order
-      bool emptyCart = await removeCartItems(token);
-      if (emptyCart)
+    final shippingSaved = await saveShipping();
+    final savedPayment = await savePayment();
+    if (savedPayment) {
+      final response = await http.post(url,
+          headers: header,
+          body: json.encode({"shipping_method": "flatrate_flatrate"}));
+      print(response.body);
+      if (response.statusCode == 200) {
         return true;
-      else
-        return false;
-    }
-    return false;
+      }
+      return false;
+    } else
+      return false;
   }
 
   @override
@@ -231,6 +232,63 @@ class ProductApi implements RemoteDataSource {
       return responseData['message'];
     }
     return null;
+  }
+
+  @override
+  Future<List<String>> getCountries(String token) async {
+    List<String> countries = [];
+    var url = BASE_URL + COUNTRIES;
+    _addAuthorizationToHeader(token);
+    final response = await http.get(url, headers: header);
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      final data = responseData['data'];
+      if (data != null)
+        data.forEach((country) => countries.add(country['name']));
+      return countries;
+    }
+    return countries;
+  }
+
+  @override
+  Future<bool> saveAddress(
+      String token, Map<String, dynamic> shippingAddress) async {
+    var url = BASE_URL + SAVE_ADDRESS;
+    _addAuthorizationToHeader(token);
+
+    final response = await http.post(url,
+        headers: header, body: json.encode(shippingAddress));
+    final responseData = json.decode(response.body);
+    if (response.statusCode == 200 && responseData['error'] == null)
+      return true;
+    return false;
+  }
+
+  @override
+  Future<bool> saveShipping() async {
+    var url = BASE_URL + SAVE_SHIPPING;
+    final response = await http.post(url,
+        headers: header,
+        body: json.encode({'shipping_method': "flatrate_flatrate"}));
+    print(response.body);
+    final responseData = json.decode(response.body);
+    if (response.statusCode == 200 && responseData['error'] == null)
+      return true;
+    return false;
+  }
+
+  Future<bool> savePayment() async {
+    var url = BASE_URL + SAVE_PAYMENT;
+    final response = await http.post(url,
+        headers: header,
+        body: json.encode({
+          'payment': {"method": "cashondelivery"}
+        }));
+    print(response.body);
+    final responseData = json.decode(response.body);
+    if (response.statusCode == 200 && responseData['error'] == null)
+      return true;
+    return false;
   }
 
   void _addAuthorizationToHeader(String token) {

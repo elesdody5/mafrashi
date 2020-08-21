@@ -9,16 +9,28 @@ import '../auth/fake_user_manger.dart';
 
 String _email = "eles@ele.com";
 String _token =
-    "eyJpdiI6IjBYZmdHTSsxNVptTGR3XC9ZYnNlREpBPT0iLCJ2YWx1ZSI6IjM5Z0pWWUY0aFRPNFlBRml3WlVDSFgxcHlsc1RJQitHNG0wWjUwK21ZVGdMb2VLNGlaeDBnZjVlTnJ2NjhPbFciLCJtYWMiOiJkZTY1ZDBmZWU1NGQ3YjI4MDU2N2MxMzk4ZTVkYjUwM2MxYzlkZTQyMmVjZGQwYzRlYmFjNDJiOGMxMzY4YTZiIn0";
+    "eyJpdiI6ImlyQml0ZE53bmFLcDNtNVwvQmd0M0VRPT0iLCJ2YWx1ZSI6Ik9FV2JmQ3J5NUFOdm1hWGlORzFsOFVxQ1ZFWU5abXhnUmNPMFlUNDRXQzhiXC80T1dBTENCdVJJVTR6WnRyeFlsIiwibWFjIjoiYmRjOWQxZTFkNmJhODk2ZTY3OTcxYTRjMzk2ODEzNzI4YTAzYjY3YmI2MDI2ZDczOTYxYTZiOWJhMmRjNzdjOCJ9";
 UserManager fakeUserManger = FakeUserManager(email: _email, token: _token);
 ProfileApi _remoteDataSource = ProfileApiImp();
-ProfileRepository productRepository =
+ProfileRepository profileRepository =
     ProfileRepositoryImp(fakeUserManger, _remoteDataSource);
 
 void main() {
   test("get user data ", () async {
-    User user = await productRepository.fetchUserData();
+    User user = await profileRepository.fetchUserData();
     print(user);
     expect(user != null, true);
+  });
+  test('update user data', () async {
+    bool result = await profileRepository.editProfile(
+        firstName: "Ahmed",
+        lastName: "elesd",
+        email: "eles@ele.com",
+        gender: "male",
+        password: "password",
+        confirmPassword: "password",
+        phone: "01066568187",
+        dateOfBirth: "12-08-1996");
+    expect(result, true);
   });
 }

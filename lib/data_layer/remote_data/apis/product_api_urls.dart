@@ -11,3 +11,7 @@ const CHECK_OUT_ORDER = '/checkout/save-order';
 const EMPTY_CART = '/checkout/cart/empty';
 const PRODUCT_BY_ID = '/products/';
 const APPLY_COUPON = '/apply-coupon';
+const COUNTRIES = '/countries';
+const SAVE_ADDRESS = '/checkout/save-address';
+const SAVE_SHIPPING = '/checkout/save-shipping';
+const SAVE_PAYMENT = '/checkout/save-payment';

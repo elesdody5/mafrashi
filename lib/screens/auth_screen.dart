@@ -347,6 +347,7 @@ class _AuthScreenState extends State<AuthScreen>
                                     }
                                   }
                                 : null,
+                            save: (value) => _authData['first_name'] = value,
                           ),
                         ),
                         AnimatedInputField(
@@ -364,6 +365,7 @@ class _AuthScreenState extends State<AuthScreen>
                                     }
                                   }
                                 : null,
+                            save: (value) => _authData['last_name'] = value,
                           ),
                         ),
                         _buildEmailTextField(),
@@ -421,7 +423,7 @@ class _AuthScreenState extends State<AuthScreen>
                             authMode: _authMode,
                             opacityAnimation: _opacityAnimation,
                             slideAnimation: _slideAnimation,
-                            child: RadioGroupWidget(_character)),
+                            child: RadioGroupWidget(_character, _authData)),
                         InkWell(
                           onTap: () => _showPicker(),
                           child: AnimatedInputField(

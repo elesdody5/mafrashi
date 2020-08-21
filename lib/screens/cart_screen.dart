@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mafrashi/language/app_loacl.dart';
 import 'package:mafrashi/providers/cart.dart';
-import 'package:mafrashi/providers/orders.dart';
+import 'package:mafrashi/screens/checkout_screen.dart';
 import 'package:mafrashi/widgets/dialog_style.dart';
 import 'package:mafrashi/widgets/form_text_field.dart';
 import 'package:provider/provider.dart';
@@ -108,6 +108,7 @@ class CouponButton extends StatefulWidget {
   }) : super(key: key);
 
   final CartProvider cart;
+
   @override
   _couponButtonState createState() => _couponButtonState();
 }
@@ -195,6 +196,7 @@ class OrderButton extends StatefulWidget {
 
 class _OrderButtonState extends State<OrderButton> {
   var _isLoading = false;
+
   void _showSuccessfully() {
     Alert(
       context: context,
@@ -224,20 +226,15 @@ class _OrderButtonState extends State<OrderButton> {
         color: Theme.of(context).accentColor,
         child: _isLoading
             ? CircularProgressIndicator()
-            : Text(AppLocalizations.of(context).translate('order')),
+            : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Text(AppLocalizations.of(context)
+                    .translate('proceed_to_checkout')),
+                Icon(Icons.arrow_forward),
+              ]),
         onPressed: (widget.cart.totalAmount <= 0 || _isLoading)
             ? null
             : () async {
-                setState(() {
-                  _isLoading = true;
-                });
-                await Provider.of<Orders>(context, listen: false).addOrder();
-
-                setState(() {
-                  _isLoading = false;
-                });
-                _showSuccessfully();
-                widget.cart.clear();
+                Navigator.pushNamed(context, CheckOutScreen.routeName);
               },
       ),
     );

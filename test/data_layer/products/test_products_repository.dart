@@ -11,7 +11,36 @@ import '../auth/fake_user_manger.dart';
 
 String _email = "eles@ele.com";
 String _token =
-    "eyJpdiI6IjZkTG95bmUxcGEwT05EV0JFdng0U3c9PSIsInZhbHVlIjoiYnBpYzRRcFJwQldyc2JuTzRPSTdpK1BqUVk1ZWNtXC9GSGRBbjhmY1d0YkxHcmhWVFBTNnNXT1krUTFEUXA5b1QiLCJtYWMiOiJhN2FkYjc1YTBiOTc1MGJjYWM2OTkzYWM0ZDcxZGYwNDFiN2QwOWRmNjQ4YjI4ZjA4ZDNmMzFmZTllNTRhNWE3In0%3D";
+    "eyJpdiI6ImdnTlZ5T0d3bGJnUGhYaFczVXpYamc9PSIsInZhbHVlIjoiaGd6RW55a3I5XC8zK1FNSlNBR1dXT2xFMVFUQ05uM0tzd3FqdkpzSVVRc2dyd1hFa2tWejYrZ0NaNk5cL1ozb3RXIiwibWFjIjoiNDllMTBjZTI3NTgyZjQ0ZDcwODU2YTU3YTNkYTJhYzk2OTAxY2JiNTA4NTk5OTc1NDM4ZWVmNmJlZmQ2Yjc1OSJ9";
+
+Map<String, dynamic> shippingAddress = {
+  "billing": {
+    "company_name": "Cmpany",
+    "first_name": "Ahmed",
+    "last_name": "Elesdody",
+    "email": "elesdody5@gmail.com",
+    "address1": {"": "Address"},
+    "city": "City",
+    "country": "Yemen",
+    "state": "Ztate",
+    "postcode": "12345",
+    "phone": "01066568187",
+    "use_for_shipping": "1"
+  },
+  "shipping": {
+    "first_name": "Ahmed",
+    "last_name": "Elesdody",
+    "email": "elesdody5@gmail.com",
+    "address1": {"": "Address"},
+    "city": "City",
+    "country": "Yemen",
+    "state": "State",
+    "postcode": "12345",
+    "phone": "01066568187"
+  },
+  "shipping_method": "flaterate"
+};
+
 UserManager fakeUserManger = FakeUserManager(email: _email, token: _token);
 RemoteDataSource _remoteDataSource = ProductApi();
 Repository productRepository =
@@ -66,6 +95,23 @@ void main() {
   });
   test('remove cart Item ', () async {
     final result = await productRepository.removeFromCart(88);
+    expect(result, true);
+  });
+  test("checkout when cart in items", () async {
+    final result = await productRepository.order();
+    expect(result, true);
+  });
+  test('get countries', () async {
+    final contries = await productRepository.countries();
+    expect(contries.isNotEmpty, true);
+  });
+
+  test('save address', () async {
+    final result = await productRepository.saveAddress(shippingAddress);
+    expect(result, true);
+  });
+  test('make order ', () async {
+    final result = await productRepository.order();
     expect(result, true);
   });
 }

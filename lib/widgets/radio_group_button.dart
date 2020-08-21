@@ -4,7 +4,8 @@ enum SingingCharacter { male, female }
 
 class RadioGroupWidget extends StatefulWidget {
   SingingCharacter _character;
-  RadioGroupWidget(this._character);
+  final _authData;
+  RadioGroupWidget(this._character, this._authData);
 
   @override
   _RadioGroupWidgetState createState() => _RadioGroupWidgetState();
@@ -20,6 +21,7 @@ class _RadioGroupWidgetState extends State<RadioGroupWidget> {
           onChanged: (SingingCharacter value) {
             setState(() {
               widget._character = value;
+              widget._authData['gender'] = value;
             });
           },
         ),
@@ -30,6 +32,7 @@ class _RadioGroupWidgetState extends State<RadioGroupWidget> {
           onChanged: (SingingCharacter value) {
             setState(() {
               widget._character = value;
+              widget._authData['gender'] = value;
             });
           },
         ),

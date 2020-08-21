@@ -333,7 +333,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   _authData['phone'] = value;
                                 },
                               ),
-                              RadioGroupWidget(_character),
+                              RadioGroupWidget(_character, _authData),
                               InkWell(
                                 onTap: () => _showPicker(),
                                 child: Padding(

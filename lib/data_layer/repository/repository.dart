@@ -34,8 +34,11 @@ abstract class Repository {
       int productId, int quantity, int colorId, int sizeId, int variantId);
   Future<List<Cart>> fetchCartList();
   Future<bool> removeFromCart(int productId);
-  Future<bool> checkOut();
   Future<String> addCoupon(int code);
+  Future<List<String>> countries();
+  Future<bool> saveAddress(Map<String, dynamic> shippingAddress);
+  Future<bool> saveShipping();
+  Future<bool> order();
 }
 
 abstract class ProfileRepository {

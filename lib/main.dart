@@ -16,6 +16,7 @@ import 'package:mafrashi/providers/products.dart';
 import 'package:mafrashi/providers/profile.dart';
 import 'package:mafrashi/screens/auth_screen.dart';
 import 'package:mafrashi/screens/category_screen.dart';
+import 'package:mafrashi/screens/checkout_screen.dart';
 import 'package:mafrashi/screens/products_overview_screen.dart';
 import 'package:mafrashi/screens/splash_screen.dart';
 import 'package:mafrashi/screens/tabs_screen.dart';
@@ -149,7 +150,7 @@ class MyApp extends StatelessWidget {
             OrdersScreen.routeName: (ctx) => OrdersScreen(),
             AuthScreen.routeName: (ctx) => AuthScreen(),
             ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
-            WelcomePage.routeName: (ctx) => WelcomePage()
+            WelcomePage.routeName: (ctx) => WelcomePage(),
           },
           onGenerateRoute: _generateRoute,
         );
@@ -165,6 +166,8 @@ class MyApp extends StatelessWidget {
         return SlideRightRoute(
           page: CategoryScreen(categoryId),
         );
+      case CheckOutScreen.routeName:
+        return SlideRightRoute(page: CheckOutScreen());
     }
   }
 }

@@ -15,7 +15,10 @@ abstract class RemoteDataSource {
       int sizeId, int variantId);
   Future<List<Cart>> fetchCartList(String toke);
   Future<bool> removeFromCart(String toke, int productId);
-  Future<bool> checkOut(String token);
+  Future<bool> order(String token);
   Future<bool> removeCartItems(String token);
   Future<String> addCoupon(String token, int code);
+  Future<List<String>> getCountries(String token);
+  Future<bool> saveAddress(String token, Map<String, dynamic> shippingAddress);
+  Future<bool> saveShipping();
 }
