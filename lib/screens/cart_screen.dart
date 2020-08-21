@@ -49,40 +49,99 @@ class CartScreen extends StatelessWidget {
                       children: <Widget>[
                         Card(
                           margin: EdgeInsets.all(15),
-                          child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  AppLocalizations.of(context)
-                                      .translate('total'),
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                                Spacer(),
-                                Chip(
-                                  label: Text(
-                                    '\$${cart.totalAmount.toStringAsFixed(2)}',
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .primaryTextTheme
-                                          .title
-                                          .color,
-                                    ),
+                          child: Column(children: [
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    AppLocalizations.of(context)
+                                        .translate('total'),
+                                    style: TextStyle(fontSize: 20),
                                   ),
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                ),
-                                CouponButton(cart: cart)
-                              ],
+                                  Spacer(),
+                                  Chip(
+                                    label: Text(
+                                      '\$${cart.totalAmount.toStringAsFixed(2)}',
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .primaryTextTheme
+                                            .title
+                                            .color,
+                                      ),
+                                    ),
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                  ),
+                                  CouponButton(cart: cart)
+                                ],
+                              ),
                             ),
-                          ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    AppLocalizations.of(context)
+                                        .translate('tax'),
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  Spacer(),
+                                  Chip(
+                                    label: Text(
+                                      cart.items[0].formattedTax,
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .primaryTextTheme
+                                            .title
+                                            .color,
+                                      ),
+                                    ),
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    AppLocalizations.of(context)
+                                        .translate('discount'),
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  Spacer(),
+                                  Chip(
+                                    label: Text(
+                                      cart.items[0].formattedDiscount,
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .primaryTextTheme
+                                            .title
+                                            .color,
+                                      ),
+                                    ),
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ]),
                         ),
                         SizedBox(height: 10),
                         Expanded(
                           child: ListView.builder(
                             itemCount: cart.items.length,
-                            itemBuilder: (ctx, i) => CartItem(
+                            itemBuilder: (ctx, i) => CartItemWidget(
                               cart.items[i],
                             ),
                           ),
@@ -152,6 +211,7 @@ class _couponButtonState extends State<CouponButton> {
     });
     String message = await Provider.of<CartProvider>(context, listen: false)
         .addCoupon(int.parse(_codeController.text));
+    await Provider.of<CartProvider>(context, listen: false).fetchCartItems();
     setState(() {
       _isLoading = false;
     });

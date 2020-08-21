@@ -8,6 +8,8 @@ class Cart {
   final String price;
   final int colorId;
   final int sizeId;
+  String formattedTax;
+  String formattedDiscount;
 
   Cart(
       {@required this.id,
@@ -15,6 +17,8 @@ class Cart {
       @required this.title,
       @required this.quantity,
       @required this.price,
+      this.formattedTax,
+      this.formattedDiscount,
       this.colorId,
       this.sizeId});
 
@@ -23,7 +27,7 @@ class Cart {
         id: json['id'],
         productId: json['id'],
         title: json['name'],
-        quantity: json['additional']['quantity'],
+        quantity: int.parse(json['additional']['quantity']),
         price: json['price']);
   }
 }

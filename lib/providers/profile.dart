@@ -25,6 +25,14 @@ class ProfileProvider with ChangeNotifier {
       String confirmPassword,
       String phone,
       String dateOfBirth) async {
-    return await _profileRepository.editProfile();
+    return await _profileRepository.editProfile(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        gender: gender,
+        password: password,
+        confirmPassword: confirmPassword,
+        phone: phone,
+        dateOfBirth: dateOfBirth);
   }
 }

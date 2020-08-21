@@ -5,9 +5,9 @@ import 'package:provider/provider.dart';
 
 import '../providers/cart.dart';
 
-class CartItem extends StatelessWidget {
+class CartItemWidget extends StatelessWidget {
   Cart _cart;
-  CartItem(this._cart);
+  CartItemWidget(this._cart);
   @override
   Widget build(BuildContext context) {
     return Dismissible(

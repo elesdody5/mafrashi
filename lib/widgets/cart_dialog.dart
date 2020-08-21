@@ -127,7 +127,7 @@ class _CartDialogState extends State<CartDialog> {
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.of(context).pop();
             },
             width: 120,
           )
@@ -147,7 +147,7 @@ class _CartDialogState extends State<CartDialog> {
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.of(context).pop();
             },
             width: 120,
           )

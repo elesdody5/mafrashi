@@ -256,6 +256,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 return Consumer<ProfileProvider>(
                     builder: (ctx, profile, child) {
                   _dateController.text = profile.user.dateOfBirth;
+                  _authData['gender'] = profile.user.gender;
                   return ListView(
                     children: <Widget>[
                       Form(
@@ -264,23 +265,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Column(
                             children: <Widget>[
                               FormTextField(
-                                  enable: _edit,
-                                  value: "${profile.user.firstName}",
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return AppLocalizations.of(context)
-                                          .translate('please_enter_first_name');
-                                    }
-                                  }),
+                                enable: _edit,
+                                value: "${profile.user.firstName}",
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return AppLocalizations.of(context)
+                                        .translate('please_enter_first_name');
+                                  }
+                                },
+                                save: (value) =>
+                                    _authData['first_name'] = value,
+                              ),
                               FormTextField(
-                                  enable: _edit,
-                                  value: profile.user.lastName,
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return AppLocalizations.of(context)
-                                          .translate('please_enter_last_name');
-                                    }
-                                  }),
+                                enable: _edit,
+                                value: profile.user.lastName,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return AppLocalizations.of(context)
+                                        .translate('please_enter_last_name');
+                                  }
+                                },
+                                save: (value) => _authData['last_name'] = value,
+                              ),
                               FormTextField(
                                 enable: _edit,
                                 value: profile.user.email,

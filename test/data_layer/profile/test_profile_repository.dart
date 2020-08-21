@@ -9,7 +9,7 @@ import '../auth/fake_user_manger.dart';
 
 String _email = "eles@ele.com";
 String _token =
-    "eyJpdiI6ImlyQml0ZE53bmFLcDNtNVwvQmd0M0VRPT0iLCJ2YWx1ZSI6Ik9FV2JmQ3J5NUFOdm1hWGlORzFsOFVxQ1ZFWU5abXhnUmNPMFlUNDRXQzhiXC80T1dBTENCdVJJVTR6WnRyeFlsIiwibWFjIjoiYmRjOWQxZTFkNmJhODk2ZTY3OTcxYTRjMzk2ODEzNzI4YTAzYjY3YmI2MDI2ZDczOTYxYTZiOWJhMmRjNzdjOCJ9";
+    "eyJpdiI6InJMdUsxS1IzK1g2MUhBWFpcLzJ1dlF3PT0iLCJ2YWx1ZSI6IlBwZklaTVwvZmFnRExNd1JrdXR5aGtqblMraXZ3cDBiWTkybGNWbXNoNDZVa3Z2YXk0WUpCNFM1eE42eTl5ZHFnIiwibWFjIjoiNmI0NWFiZjI4MjUzNDJlYTA5OWNlZTlmZjEzN2I2NTdmNThlYTU4YTYyN2I5OTQ1MzA0NjQxMWYwNjRkZTZhZSJ9";
 UserManager fakeUserManger = FakeUserManager(email: _email, token: _token);
 ProfileApi _remoteDataSource = ProfileApiImp();
 ProfileRepository profileRepository =

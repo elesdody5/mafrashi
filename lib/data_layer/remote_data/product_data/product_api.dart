@@ -164,9 +164,16 @@ class ProductApi implements RemoteDataSource {
     }
     final data = responseData['data'];
     if (data == null) return cartList;
+    String formattedTax = data['formated_tax_total'];
+    String formattedDiscount = data['formated_discount'];
     final items = data['items'];
 
-    items.forEach((cartJson) => cartList.add(Cart.fromJson(cartJson)));
+    items.forEach((cartJson) {
+      Cart cart = Cart.fromJson(cartJson);
+      cart.formattedTax = formattedTax;
+      cart.formattedDiscount = formattedDiscount;
+      cartList.add(cart);
+    });
     return cartList;
   }
 
