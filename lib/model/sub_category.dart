@@ -1,16 +1,15 @@
 class SubCategory {
   int id;
-  String name;
   String description;
+  String slug;
 
-  SubCategory({this.id, this.name, this.description});
+  SubCategory({this.id, this.slug, this.description});
 
   factory SubCategory.fromJson(Map<String, dynamic> json) => SubCategory(
         id: json["id"],
-        name: json["name"],
+        slug: json['slug'],
         description: json["description"],
       );
 
-  Map<String, dynamic> toJson() =>
-      {"id": id, "name": name, "description": description};
+  Map<String, dynamic> toJson() => {"id": id, "description": description};
 }

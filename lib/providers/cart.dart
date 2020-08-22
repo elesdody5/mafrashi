@@ -28,9 +28,12 @@ class CartProvider with ChangeNotifier {
   Future<bool> addItem(int productId, int quantity, int colorId, int sizeId,
       int variantId) async {
     try {
-      await _productRepository.addToCart(
+      bool added = await _productRepository.addToCart(
           productId, quantity, colorId, sizeId, variantId);
-      fetchCartItems();
+      if (added) {
+        _items.add(Cart());
+        notifyListeners();
+      }
       return true;
     } catch (error) {
       print(error);

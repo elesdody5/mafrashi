@@ -41,8 +41,8 @@ class ProductRepository with ChangeNotifier implements Repository {
   }
 
   @override
-  Future<List<SubCategory>> fetchSubCategories(String categorySlug) async {
-    return await _remoteDataSource.fetchSubCategories(categorySlug);
+  Future<List<SubCategory>> fetchSubCategories(int categoryID) async {
+    return await _remoteDataSource.fetchSubCategories(categoryID);
   }
 
   @override
@@ -91,8 +91,9 @@ class ProductRepository with ChangeNotifier implements Repository {
   }
 
   @override
-  Future<bool> saveShipping() {
-    // TODO: implement saveShipping
-    return null;
+  Future<List<Product>> fetchProductFromSubCategory(
+      String categorySlug, String subCategorySlug) async {
+    return await _remoteDataSource.fetchProductFromSubCategory(
+        categorySlug, subCategorySlug);
   }
 }

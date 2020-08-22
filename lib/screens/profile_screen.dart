@@ -5,6 +5,7 @@ import 'package:mafrashi/providers/auth.dart';
 import 'package:mafrashi/providers/change_language_provider.dart';
 import 'package:mafrashi/providers/profile.dart';
 import 'package:mafrashi/screens/auth_screen.dart';
+import 'package:mafrashi/screens/tabs_screen.dart';
 import 'package:mafrashi/screens/welcom_screen.dart';
 import 'package:mafrashi/widgets/dialog_style.dart';
 import 'package:mafrashi/widgets/form_text_field.dart';
@@ -142,7 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Provider.of<AppLanguage>(context, listen: false)
                 .changeLanguage(Locale("en"));
             Navigator.pop(context);
-            Navigator.pushReplacementNamed(context, WelcomePage.routeName);
+            Navigator.pushReplacementNamed(context, TabsScreen.routeName);
           },
         ),
         DialogButton(

@@ -128,6 +128,7 @@ class _CartDialogState extends State<CartDialog> {
             ),
             onPressed: () {
               Navigator.of(context).pop();
+              Navigator.of(context).pop();
             },
             width: 120,
           )
@@ -148,6 +149,7 @@ class _CartDialogState extends State<CartDialog> {
             ),
             onPressed: () {
               Navigator.of(context).pop();
+              Navigator.of(context).pop();
             },
             width: 120,
           )
@@ -164,8 +166,6 @@ class _CartDialogState extends State<CartDialog> {
       bool result = await provider.addItem(widget._product.id, _quantity,
           _currentColor.id, _currentSize.id, _currentVariant.id);
       await pr.hide();
-      // remove current dialog
-      Navigator.pop(context);
 
       result ? _showAddedSuccessfully(context) : _showErrorAlert();
     }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mafrashi/language/app_loacl.dart';
 import 'package:mafrashi/providers/auth.dart';
 import 'package:mafrashi/screens/auth_screen.dart';
+import 'package:mafrashi/widgets/dialog_style.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -20,11 +21,11 @@ class AuthenticatedWidget extends StatelessWidget {
       type: AlertType.error,
       title: AppLocalizations.of(context).translate('please_login'),
       desc: AppLocalizations.of(context).translate("cant_open"),
-      style: AlertStyle(isCloseButton: true),
+      style: alertStyle,
       buttons: [
         DialogButton(
           child: Text(
-            AppLocalizations.of(context).translate('login'),
+            AppLocalizations.of(context).translate('log_in'),
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           onPressed: () => Navigator.pushNamed(context, AuthScreen.routeName),

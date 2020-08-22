@@ -28,7 +28,7 @@ abstract class Repository {
   Future<List<Category>> fetchCategory();
   Future<bool> addToWishList(int productId);
   Future<List<Product>> fetchWishList();
-  Future<List<SubCategory>> fetchSubCategories(String categorySlug);
+  Future<List<SubCategory>> fetchSubCategories(int categoryId);
   Future<List<Product>> fetchProductsFromCategory(String categorySlug);
   Future<bool> addToCart(
       int productId, int quantity, int colorId, int sizeId, int variantId);
@@ -36,8 +36,9 @@ abstract class Repository {
   Future<bool> removeFromCart(int productId);
   Future<String> addCoupon(int code);
   Future<List<String>> countries();
+  Future<List<Product>> fetchProductFromSubCategory(
+      String categorySlug, String subCategorySlug);
   Future<bool> saveAddress(Map<String, dynamic> shippingAddress);
-  Future<bool> saveShipping();
   Future<bool> order();
 }
 

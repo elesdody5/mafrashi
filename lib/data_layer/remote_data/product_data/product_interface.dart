@@ -9,7 +9,9 @@ abstract class RemoteDataSource {
   Future<List<Category>> fetchCategory();
   Future<bool> addToWishList(int productId, String token);
   Future<List<Product>> fetchWishList(String token);
-  Future<List<SubCategory>> fetchSubCategories(String categorySlug);
+  Future<List<SubCategory>> fetchSubCategories(int categoryId);
+  Future<List<Product>> fetchProductFromSubCategory(
+      String categorySlug, String subCategorySlug);
   Future<List<Product>> fetchProductsFromCategory(String categorySlug);
   Future<bool> addToCart(String token, int productId, int quantity, int colorId,
       int sizeId, int variantId);

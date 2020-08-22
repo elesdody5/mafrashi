@@ -8,6 +8,7 @@ var alertStyle = AlertStyle(
   isOverlayTapDismiss: true,
   descStyle: TextStyle(fontWeight: FontWeight.bold),
   animationDuration: Duration(milliseconds: 400),
+  backgroundColor: Colors.white,
   alertBorder: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(20),
     side: BorderSide(

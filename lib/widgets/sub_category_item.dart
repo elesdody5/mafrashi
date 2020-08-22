@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mafrashi/model/sub_category.dart';
-import 'package:mafrashi/providers/products.dart';
+import 'package:mafrashi/providers/category_provider.dart';
+import 'package:mafrashi/screens/sub_category_screen.dart';
 import 'package:provider/provider.dart';
 
 class SubCategoryItem extends StatelessWidget {
@@ -10,18 +11,19 @@ class SubCategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final productsData = Provider.of<ProductsProvider>(context);
-    final selectedId = productsData.selectedCategoryId;
-    final isSelected = _subCategory.id == selectedId ? true : false;
+    final productsData = Provider.of<CategoryProvider>(context, listen: false);
+    final categorySlug = productsData.currentCategorySlug;
+
     return GestureDetector(
-//      onTap: () {
-//        Navigator.of(context).pushNamed(
-//          CategoryScreen.routeName,
-//          arguments: _subCategory.id,
-//        );
-//      },
+      onTap: () {
+        Navigator.of(context).pushNamed(SubCategoryScreen.routName, arguments: {
+          "sub_category_name": _subCategory.description,
+          "category_slug": categorySlug,
+          "sub_category_slug": _subCategory.slug
+        });
+      },
       child: Chip(
-        label: Text(_subCategory.name),
+        label: Text(_subCategory.description),
         labelStyle: TextStyle(color: Colors.white),
         backgroundColor: Theme.of(context).accentColor,
       ),

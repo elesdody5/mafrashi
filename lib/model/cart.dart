@@ -27,7 +27,7 @@ class Cart {
         id: json['id'],
         productId: json['id'],
         title: json['name'],
-        quantity: int.parse(json['additional']['quantity']),
+        quantity: json['additional']['quantity'],
         price: json['price']);
   }
 }

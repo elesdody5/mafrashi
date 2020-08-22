@@ -64,8 +64,8 @@ class ProductApi implements RemoteDataSource {
   }
 
   @override
-  Future<List<SubCategory>> fetchSubCategories(String categorySlug) async {
-    var url = BASE_URL + SUB_CATEGORIES + '$categorySlug';
+  Future<List<SubCategory>> fetchSubCategories(int categoryID) async {
+    var url = BASE_URL + SUB_CATEGORIES + '$categoryID';
     List<SubCategory> subCategoryList = [];
     try {
       final response = await http.get(url);
@@ -76,8 +76,7 @@ class ProductApi implements RemoteDataSource {
       final data = responseData['data'];
 
       data.forEach((subCategoryJson) {
-        final subCategory = subCategoryJson['translation'][0];
-        subCategoryList.add(SubCategory.fromJson(subCategory));
+        subCategoryList.add(SubCategory.fromJson(subCategoryJson));
       });
       return subCategoryList;
     } catch (error) {
@@ -296,6 +295,25 @@ class ProductApi implements RemoteDataSource {
     if (response.statusCode == 200 && responseData['error'] == null)
       return true;
     return false;
+  }
+
+  @override
+  Future<List<Product>> fetchProductFromSubCategory(
+      String categorySlug, String subCategorySlug) async {
+    var url = BASE_URL + PRODUCT_CATEGORY + categorySlug + "/$subCategorySlug";
+    List<Product> productList = [];
+    final response = await http.get(url, headers: header);
+    final responseData = json.decode(response.body) as Map<String, dynamic>;
+    if (responseData == null) {
+      return productList;
+    }
+    final data = responseData['data'];
+    for (var productJson in data) {
+      String productId = productJson['product_id'];
+      Product product = await fetchProductById(int.parse(productId));
+      productList.add(product);
+    }
+    return productList;
   }
 
   void _addAuthorizationToHeader(String token) {

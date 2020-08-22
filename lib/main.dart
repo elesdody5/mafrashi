@@ -19,6 +19,7 @@ import 'package:mafrashi/screens/category_screen.dart';
 import 'package:mafrashi/screens/checkout_screen.dart';
 import 'package:mafrashi/screens/products_overview_screen.dart';
 import 'package:mafrashi/screens/splash_screen.dart';
+import 'package:mafrashi/screens/sub_category_screen.dart';
 import 'package:mafrashi/screens/tabs_screen.dart';
 import 'package:mafrashi/screens/welcom_screen.dart';
 import 'package:provider/provider.dart';
@@ -151,6 +152,7 @@ class MyApp extends StatelessWidget {
             AuthScreen.routeName: (ctx) => AuthScreen(),
             ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
             WelcomePage.routeName: (ctx) => WelcomePage(),
+            SubCategoryScreen.routName: (ctx) => SubCategoryScreen()
           },
           onGenerateRoute: _generateRoute,
         );

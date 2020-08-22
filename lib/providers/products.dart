@@ -5,11 +5,6 @@ import 'package:mafrashi/model/product.dart';
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [];
   List<Product> _wishList = [];
-  List<Product> _productCategory = [];
-
-  List<Product> get productCategory {
-    return [..._productCategory];
-  }
 
   List<Product> get wishList {
     return [..._wishList];
@@ -67,12 +62,6 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> fetchProducts() async {
     if (_items.isEmpty) _items = await _productRepository.fetchProducts();
-    notifyListeners();
-  }
-
-  Future<void> fetchProductsByCategory(String catSlug) async {
-    _productCategory =
-        await _productRepository.fetchProductsFromCategory(catSlug);
     notifyListeners();
   }
 }

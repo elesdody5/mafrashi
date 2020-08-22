@@ -73,7 +73,7 @@ void main() {
     expect(list.isNotEmpty, true);
   });
   test("fetch sub category from category", () async {
-    final list = await productRepository.fetchSubCategories("1");
+    final list = await productRepository.fetchSubCategories(18);
     expect(list.isNotEmpty, true);
   });
 
@@ -105,7 +105,11 @@ void main() {
     final contries = await productRepository.countries();
     expect(contries.isNotEmpty, true);
   });
-
+  test('fetch product from sub cat', () async {
+    final products = await productRepository.fetchProductFromSubCategory(
+        'mafaresh-en', "mlayat");
+    expect(products.isNotEmpty, true);
+  });
   test('save address', () async {
     final result = await productRepository.saveAddress(shippingAddress);
     expect(result, true);

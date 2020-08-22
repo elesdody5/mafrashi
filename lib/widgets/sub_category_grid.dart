@@ -6,7 +6,8 @@ import 'package:provider/provider.dart';
 class SubCategoryGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final categoriesData = Provider.of<CategoryProvider>(context);
+    final categoriesData =
+        Provider.of<CategoryProvider>(context, listen: false);
     final categories = categoriesData.subCategory;
     return ListView.builder(
       scrollDirection: Axis.horizontal,

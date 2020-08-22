@@ -74,6 +74,7 @@
   "please_wait": "Please wait it may take a moment",
   "tax": "Total Tax",
   "discount": "Total discount",
+  "empty_category": "This category is empty ",
   "previous": "Previous",
   "enter_password_phone": "Please Enter Phone and Password",
   "register_new_account": "Register a new account",

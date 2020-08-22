@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mafrashi/language/app_loacl.dart';
 
 class ErrorImage extends StatelessWidget {
   @override
@@ -12,7 +13,7 @@ class ErrorImage extends StatelessWidget {
             size: 100,
           ),
           Text(
-            "Something went wrong please try again later",
+            AppLocalizations.of(context).translate('something_went_wrong'),
             style: TextStyle(fontSize: 18),
           )
         ],

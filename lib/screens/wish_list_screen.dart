@@ -27,13 +27,13 @@ class WishListScreen extends StatelessWidget {
               } else {
                 return Consumer<ProductsProvider>(
                     builder: (_, provider, child) {
-                  if (provider.items.isEmpty) {
+                  if (provider.wishList.isEmpty) {
                     return Center(
-                      child: GridTile(
-                        child: Image.asset('assets/images/heart.png'),
-                        footer: Text(AppLocalizations.of(context)
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                        Image.asset('assets/images/heart.png'),
+                        Text(AppLocalizations.of(context)
                             .translate('empty_wish_list')),
-                      ),
+                      ]),
                     );
                   } else {
                     return ProductsGrid(provider.wishList);
