@@ -15,3 +15,4 @@ const COUNTRIES = '/countries';
 const SAVE_ADDRESS = '/checkout/save-address';
 const SAVE_SHIPPING = '/checkout/save-shipping';
 const SAVE_PAYMENT = '/checkout/save-payment';
+const OFFERS = '/offers';

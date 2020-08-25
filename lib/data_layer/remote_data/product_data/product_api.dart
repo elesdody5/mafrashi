@@ -316,6 +316,24 @@ class ProductApi implements RemoteDataSource {
     return productList;
   }
 
+  @override
+  Future<Map<String, dynamic>> fetchOffersAndDiscount(String token) async {
+    var url = BASE_URL + OFFERS;
+    _addAuthorizationToHeader(token);
+    String discount;
+    List<Product> products = [];
+    final response = await http.get(url, headers: header);
+    final responseData = json.decode(response.body);
+    discount = responseData[0]["discount"];
+    final data = responseData[0]['product']['data'];
+    for (var productJson in data) {
+      String productId = productJson['product_id'];
+      Product product = await fetchProductById(int.parse(productId));
+      products.add(product);
+    }
+    return {"products": products, "discount": discount};
+  }
+
   void _addAuthorizationToHeader(String token) {
     header['Cookie'] = 'mafrashi_session=$token';
   }

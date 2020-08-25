@@ -1,6 +1,7 @@
 import 'package:fancy_bar/fancy_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:mafrashi/language/app_loacl.dart';
+import 'package:mafrashi/screens/offers_screen.dart';
 import 'package:mafrashi/screens/products_overview_screen.dart';
 import 'package:mafrashi/screens/profile_screen.dart';
 import 'package:mafrashi/screens/wish_list_screen.dart';
@@ -21,7 +22,7 @@ class _TabsScreenState extends State<TabsScreen> {
     _pages = [
       ProductsOverviewScreen(),
       WishListScreen(),
-//      OrdersScreen(),
+      OffersScreen(),
       ProfileScreen()
     ];
     super.initState();
@@ -50,11 +51,11 @@ class _TabsScreenState extends State<TabsScreen> {
               title: AppLocalizations.of(context).translate('wish_list'),
               icon: Icon(Icons.favorite),
             ),
-//            FancyItem(
-//              textColor: Colors.green,
-//              title: AppLocalizations.of(context).translate('orders'),
-//              icon: Icon(Icons.shopping_basket),
-//            ),
+            FancyItem(
+              textColor: Colors.green,
+              title: AppLocalizations.of(context).translate('offers'),
+              icon: Icon(Icons.local_offer),
+            ),
             FancyItem(
               textColor: Colors.brown,
               title: AppLocalizations.of(context).translate('profile'),

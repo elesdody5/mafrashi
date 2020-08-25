@@ -40,6 +40,7 @@ abstract class Repository {
       String categorySlug, String subCategorySlug);
   Future<bool> saveAddress(Map<String, dynamic> shippingAddress);
   Future<bool> order();
+  Future<Map<String, dynamic>> fetchOffersAndDiscount();
 }
 
 abstract class ProfileRepository {

@@ -23,4 +23,5 @@ abstract class RemoteDataSource {
   Future<List<String>> getCountries(String token);
   Future<bool> saveAddress(String token, Map<String, dynamic> shippingAddress);
   Future<bool> saveShipping();
+  Future<Map<String, dynamic>> fetchOffersAndDiscount(String token);
 }

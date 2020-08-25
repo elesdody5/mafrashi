@@ -3,8 +3,14 @@ import 'package:mafrashi/data_layer/repository/repository.dart';
 import 'package:mafrashi/model/product.dart';
 
 class ProductsProvider with ChangeNotifier {
-  List<Product> _items = [];
+  List<Product> _products = [];
   List<Product> _wishList = [];
+  List<Product> _productOffers = [];
+  String _discount;
+
+  String get discount => _discount;
+
+  List<Product> get productOffers => [..._productOffers];
 
   List<Product> get wishList {
     return [..._wishList];
@@ -14,8 +20,8 @@ class ProductsProvider with ChangeNotifier {
 
   ProductsProvider(this._productRepository);
 
-  List<Product> get items {
-    return [..._items];
+  List<Product> get products {
+    return [..._products];
   }
 
   int _selectedCategoryId;
@@ -57,11 +63,21 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Product findById(int id) {
-    return _items.firstWhere((prod) => prod.id == id);
+    return _products.firstWhere((prod) => prod.id == id);
   }
 
   Future<void> fetchProducts() async {
-    if (_items.isEmpty) _items = await _productRepository.fetchProducts();
+    if (_products.isEmpty) _products = await _productRepository.fetchProducts();
     notifyListeners();
+  }
+
+  Future<void> fetchOffers() async {
+    if (productOffers.isEmpty) {
+      Map<String, dynamic> offer =
+          await _productRepository.fetchOffersAndDiscount();
+      _discount = offer['discount'];
+      _productOffers = offer['products'];
+      notifyListeners();
+    }
   }
 }

@@ -80,7 +80,8 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             Flexible(
               flex: 5,
               child: Consumer<ProductsProvider>(
-                  builder: (_, products, ch) => ProductsGrid(products.items)),
+                  builder: (_, products, ch) =>
+                      ProductsGrid(products.products)),
             )
           ]);
   }

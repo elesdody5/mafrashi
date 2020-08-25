@@ -96,4 +96,10 @@ class ProductRepository with ChangeNotifier implements Repository {
     return await _remoteDataSource.fetchProductFromSubCategory(
         categorySlug, subCategorySlug);
   }
+
+  @override
+  Future<Map<String, dynamic>> fetchOffersAndDiscount() async {
+    String token = await _userManager.getToken();
+    return await _remoteDataSource.fetchOffersAndDiscount(token);
+  }
 }

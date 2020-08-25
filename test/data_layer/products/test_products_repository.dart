@@ -118,4 +118,12 @@ void main() {
     final result = await productRepository.order();
     expect(result, true);
   });
+
+  test('fetch offer and extract discount and products', () async {
+    final result = await productRepository.fetchOffersAndDiscount();
+    String discount = result['discount'];
+    var product = result['products'];
+    expect(discount.isNotEmpty, true);
+    expect(product.isNotEmpty, true);
+  });
 }
