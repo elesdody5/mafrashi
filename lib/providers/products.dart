@@ -6,9 +6,6 @@ class ProductsProvider with ChangeNotifier {
   List<Product> _products = [];
   List<Product> _wishList = [];
   List<Product> _productOffers = [];
-  String _discount;
-
-  String get discount => _discount;
 
   List<Product> get productOffers => [..._productOffers];
 
@@ -72,12 +69,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetchOffers() async {
-    if (productOffers.isEmpty) {
-      Map<String, dynamic> offer =
-          await _productRepository.fetchOffersAndDiscount();
-      _discount = offer['discount'];
-      _productOffers = offer['products'];
-      notifyListeners();
-    }
+    _productOffers = await _productRepository.fetchOffersAndDiscount();
+    notifyListeners();
   }
 }

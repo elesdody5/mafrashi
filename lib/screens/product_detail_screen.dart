@@ -205,7 +205,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                                     child: Row(
                                       children: <Widget>[
                                         Text(
-                                          _product.review.total.toString(),
+                                          _product.review.averageRating
+                                              .toString(),
                                           textAlign: TextAlign.left,
                                           style: TextStyle(
                                             fontWeight: FontWeight.w200,

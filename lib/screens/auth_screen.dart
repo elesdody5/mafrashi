@@ -157,13 +157,12 @@ class _AuthScreenState extends State<AuthScreen>
             _authData['date_of_birth']);
         if (result) _showSignUpSuccessfully();
       }
-    } on HttpException {
-      var errorMessage = 'Invalid Email or Password';
+    } on ApiException catch (error) {
+      var errorMessage = error.message;
       _showErrorDialog(errorMessage);
     } catch (error) {
       print(error);
-      const errorMessage =
-          'Could not authenticate you. Please try again later.';
+      var errorMessage = error.toString();
       _showErrorDialog(errorMessage);
     }
 

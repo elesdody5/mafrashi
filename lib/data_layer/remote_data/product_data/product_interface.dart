@@ -15,7 +15,7 @@ abstract class RemoteDataSource {
   Future<List<Product>> fetchProductsFromCategory(String categorySlug);
   Future<bool> addToCart(String token, int productId, int quantity, int colorId,
       int sizeId, int variantId);
-  Future<List<Cart>> fetchCartList(String toke);
+  Future<Cart> fetchCartList(String toke);
   Future<bool> removeFromCart(String toke, int productId);
   Future<bool> order(String token);
   Future<bool> removeCartItems(String token);
@@ -23,5 +23,7 @@ abstract class RemoteDataSource {
   Future<List<String>> getCountries(String token);
   Future<bool> saveAddress(String token, Map<String, dynamic> shippingAddress);
   Future<bool> saveShipping();
-  Future<Map<String, dynamic>> fetchOffersAndDiscount(String token);
+  Future<List<Product>> fetchOffersAndDiscount(String token);
+
+  Future<String> deleteCoupon(String token);
 }

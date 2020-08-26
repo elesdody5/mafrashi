@@ -24,6 +24,9 @@ class UserManagerImp implements UserManager {
   @override
   Future<void> deleteUserData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    _email = null;
+    _password = null;
+    _token = null;
     sharedPreferences.clear();
   }
 

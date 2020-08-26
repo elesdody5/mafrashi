@@ -31,26 +31,7 @@ class OffersScreen extends StatelessWidget {
                     ]),
                   );
                 }
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            AppLocalizations.of(context).translate('discount'),
-                            style: Theme.of(context).textTheme.title,
-                          ),
-                          Text(provider.discount),
-                        ],
-                      ),
-                    ),
-                    Expanded(child: ProductsGrid(provider.productOffers))
-                  ],
-                );
+                return ProductsGrid(provider.productOffers);
               },
             );
           }

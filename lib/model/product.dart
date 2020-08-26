@@ -6,12 +6,12 @@ class Product {
   final String description;
   final String price;
   final String imageUrl;
-  bool isFavorite;
   bool inStock;
   final Review review;
   final List<ProductColor> colors;
   final List<ProductSize> sizes;
   final List<ProductVariant> varints;
+  String discount;
 
   Product(
       {@required this.id,
@@ -19,16 +19,12 @@ class Product {
       @required this.description,
       @required this.price,
       @required this.imageUrl,
+      this.discount,
       this.colors,
       this.sizes,
       this.varints,
-      this.isFavorite = false,
       this.inStock,
       this.review});
-
-  void _setFavValue(bool newValue) {
-    isFavorite = newValue;
-  }
 
   factory Product.fromJson(Map<String, dynamic> json) {
     List<ProductColor> colors = [];
@@ -59,25 +55,17 @@ class Product {
         sizes: sizes,
         varints: variants);
   }
-
-  List<ProductColor> extractProductColor(Map<String, dynamic> productJson) {
-    return colors;
-  }
-
-  List<ProductSize> extractProductSize(Map<String, dynamic> productJson) {
-    List<ProductSize> sizes = [];
-    final sizeJson = productJson['super_attributes'][1]['options'];
-    sizeJson.forEach((color) => sizes.add(ProductSize.fromJson(productJson)));
-    return sizes;
-  }
 }
 
 class Review {
   int total;
+  var totalRating;
+  var averageRating;
 
-  Review(this.total);
+  Review(this.total, this.totalRating, this.averageRating);
 
-  factory Review.formJson(Map<String, dynamic> json) => Review(json['total']);
+  factory Review.formJson(Map<String, dynamic> json) =>
+      Review(json['total'], json['total_rating'], json['average_rating']);
 }
 
 class ProductColor {

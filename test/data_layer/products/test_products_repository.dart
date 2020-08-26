@@ -11,7 +11,7 @@ import '../auth/fake_user_manger.dart';
 
 String _email = "eles@ele.com";
 String _token =
-    "eyJpdiI6ImdnTlZ5T0d3bGJnUGhYaFczVXpYamc9PSIsInZhbHVlIjoiaGd6RW55a3I5XC8zK1FNSlNBR1dXT2xFMVFUQ05uM0tzd3FqdkpzSVVRc2dyd1hFa2tWejYrZ0NaNk5cL1ozb3RXIiwibWFjIjoiNDllMTBjZTI3NTgyZjQ0ZDcwODU2YTU3YTNkYTJhYzk2OTAxY2JiNTA4NTk5OTc1NDM4ZWVmNmJlZmQ2Yjc1OSJ9";
+    "eyJpdiI6IkZFM1dhR0o2cnJVeWZBQnpnRzZkQnc9PSIsInZhbHVlIjoiREFXZFJnSWIxQkFQSlwvVEtNTlJRODZpcW1CR3pMc2NXRm5nenJHZHR0WkZuUmMwc2xGRXNHems4YkF6TWxuczUiLCJtYWMiOiJkN2U2YTg0NWZmOWNmYTg4ZDIzMDhiMjIxOTg4MGZkZTk3YmJhNWIyZTczNTRmOTAwYzU5ODQyNDNhMDA4MzZkIn0%3D";
 
 Map<String, dynamic> shippingAddress = {
   "billing": {
@@ -90,8 +90,8 @@ void main() {
     expect(message, true);
   });
   test('fetch cart list ', () async {
-    final cartList = await productRepository.fetchCartList();
-    expect(cartList.isNotEmpty, true);
+    final cart = await productRepository.fetchCartList();
+    expect(cart.cartItems.isNotEmpty, true);
   });
   test('remove cart Item ', () async {
     final result = await productRepository.removeFromCart(88);
@@ -121,9 +121,11 @@ void main() {
 
   test('fetch offer and extract discount and products', () async {
     final result = await productRepository.fetchOffersAndDiscount();
-    String discount = result['discount'];
-    var product = result['products'];
-    expect(discount.isNotEmpty, true);
-    expect(product.isNotEmpty, true);
+
+    expect(result.isNotEmpty, true);
+  });
+  test('remove copoun', () async {
+    final message = await productRepository.deleteCoupon();
+    expect(message.isNotEmpty, true);
   });
 }

@@ -55,7 +55,7 @@ class ProductRepository with ChangeNotifier implements Repository {
   }
 
   @override
-  Future<List<Cart>> fetchCartList() async {
+  Future<Cart> fetchCartList() async {
     String token = await _userManager.getToken();
     return await _remoteDataSource.fetchCartList(token);
   }
@@ -98,8 +98,14 @@ class ProductRepository with ChangeNotifier implements Repository {
   }
 
   @override
-  Future<Map<String, dynamic>> fetchOffersAndDiscount() async {
+  Future<List<Product>> fetchOffersAndDiscount() async {
     String token = await _userManager.getToken();
     return await _remoteDataSource.fetchOffersAndDiscount(token);
+  }
+
+  @override
+  Future<String> deleteCoupon() async {
+    String token = await _userManager.getToken();
+    return await _remoteDataSource.deleteCoupon(token);
   }
 }

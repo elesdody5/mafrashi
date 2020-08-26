@@ -151,29 +151,27 @@ class ProductApi implements RemoteDataSource {
   }
 
   @override
-  Future<List<Cart>> fetchCartList(String token) async {
+  Future<Cart> fetchCartList(String token) async {
     var url = BASE_URL + CART_ITEM;
     _addAuthorizationToHeader(token);
-    List<Cart> cartList = [];
+    List<CartItem> cartList = [];
 
     final response = await http.get(url, headers: header);
     final responseData = json.decode(response.body) as Map<String, dynamic>;
     if (responseData == null) {
-      return cartList;
+      return Cart();
     }
     final data = responseData['data'];
-    if (data == null) return cartList;
-    String formattedTax = data['formated_tax_total'];
-    String formattedDiscount = data['formated_discount'];
+    if (data == null) return Cart();
+    Cart cart = Cart.fromJson(data);
     final items = data['items'];
 
     items.forEach((cartJson) {
-      Cart cart = Cart.fromJson(cartJson);
-      cart.formattedTax = formattedTax;
-      cart.formattedDiscount = formattedDiscount;
-      cartList.add(cart);
+      CartItem cartItem = CartItem.fromJson(cartJson);
+      cartList.add(cartItem);
     });
-    return cartList;
+    cart.cartItems = cartList;
+    return cart;
   }
 
   @override
@@ -317,21 +315,33 @@ class ProductApi implements RemoteDataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> fetchOffersAndDiscount(String token) async {
+  Future<List<Product>> fetchOffersAndDiscount(String token) async {
     var url = BASE_URL + OFFERS;
     _addAuthorizationToHeader(token);
-    String discount;
     List<Product> products = [];
     final response = await http.get(url, headers: header);
     final responseData = json.decode(response.body);
-    discount = responseData[0]["discount"];
-    final data = responseData[0]['product']['data'];
-    for (var productJson in data) {
-      String productId = productJson['product_id'];
+    for (var offersJson in responseData) {
+      String discount = offersJson['discount'];
+      String productId = offersJson['product']['data'][0]['product_id'];
       Product product = await fetchProductById(int.parse(productId));
+      product.discount = discount.substring(0, discount.indexOf("."));
       products.add(product);
     }
-    return {"products": products, "discount": discount};
+    return products;
+  }
+
+  @override
+  Future<String> deleteCoupon(String token) async {
+    var url = BASE_URL + DELETE_COUPON;
+    _addAuthorizationToHeader(token);
+    final response = await http.post(url, headers: header);
+    final responseData = json.decode(response.body);
+    print(responseData);
+    if (responseData['message'] != null) {
+      return responseData['message'];
+    }
+    return null;
   }
 
   void _addAuthorizationToHeader(String token) {

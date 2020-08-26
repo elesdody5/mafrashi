@@ -32,7 +32,7 @@ abstract class Repository {
   Future<List<Product>> fetchProductsFromCategory(String categorySlug);
   Future<bool> addToCart(
       int productId, int quantity, int colorId, int sizeId, int variantId);
-  Future<List<Cart>> fetchCartList();
+  Future<Cart> fetchCartList();
   Future<bool> removeFromCart(int productId);
   Future<String> addCoupon(int code);
   Future<List<String>> countries();
@@ -40,7 +40,8 @@ abstract class Repository {
       String categorySlug, String subCategorySlug);
   Future<bool> saveAddress(Map<String, dynamic> shippingAddress);
   Future<bool> order();
-  Future<Map<String, dynamic>> fetchOffersAndDiscount();
+  Future<List<Product>> fetchOffersAndDiscount();
+  Future<String> deleteCoupon();
 }
 
 abstract class ProfileRepository {

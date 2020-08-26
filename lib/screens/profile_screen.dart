@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mafrashi/language/app_loacl.dart';
@@ -90,8 +91,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _authData['password'],
               _authData['phone'],
               _authData['date_of_birth']);
-      if (result) _showSignUpSuccessfully();
-      print(result);
+      if (result) {
+        _switchEdit();
+        _showSignUpSuccessfully();
+      }
     } catch (error) {
       const errorMessage =
           'Could not edit your profile. Please try again later.';
@@ -123,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _switchEdit() {
     setState(() {
-      _edit = true;
+      _edit = !_edit;
     });
   }
 
@@ -198,46 +201,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('profile')),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(!_edit ? Icons.edit : Icons.save),
-            onPressed: !_edit ? _switchEdit : _submit,
-          ),
-          PopupMenuButton(
-            onSelected: (value) {
-              value == 0
-                  ? _showDialogChangeLanguage(context)
-                  : _showLogoutDialog();
-            },
-            icon: Icon(
-              Icons.more_vert,
+          if (Provider.of<Auth>(context, listen: false).isAuthenticated)
+            IconButton(
+              icon: Icon(!_edit ? Icons.edit : Icons.save),
+              onPressed: !_edit ? _switchEdit : _submit,
             ),
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                child: FlatButton.icon(
-                  icon: Icon(
-                    Icons.language,
-                    color: Colors.black,
-                  ),
-                  label: Text(
-                    AppLocalizations.of(context).translate('choose_language'),
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-                value: 0,
+          if (Provider.of<Auth>(context, listen: false).isAuthenticated)
+            PopupMenuButton(
+              onSelected: (value) {
+                value == 0
+                    ? _showDialogChangeLanguage(context)
+                    : _showLogoutDialog();
+              },
+              icon: Icon(
+                Icons.more_vert,
               ),
-              PopupMenuItem(
-                child: FlatButton.icon(
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  child: FlatButton.icon(
                     icon: Icon(
-                      Icons.exit_to_app,
+                      Icons.language,
                       color: Colors.black,
                     ),
                     label: Text(
-                        AppLocalizations.of(context).translate('log_out'),
-                        style: TextStyle(color: Colors.black))),
-                value: 1,
-              ),
-            ],
-          ),
+                      AppLocalizations.of(context).translate('choose_language'),
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  value: 0,
+                ),
+                PopupMenuItem(
+                  child: FlatButton.icon(
+                      icon: Icon(
+                        Icons.exit_to_app,
+                        color: Colors.black,
+                      ),
+                      label: Text(
+                          AppLocalizations.of(context).translate('log_out'),
+                          style: TextStyle(color: Colors.black))),
+                  value: 1,
+                ),
+              ],
+            ),
         ],
       ),
       body: FutureBuilder(
@@ -251,7 +256,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // ...
                 // Do error handling stuff
                 return Center(
-                  child: Text('An error occurred!'),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Image.asset('assets/images/login.png'),
+                    Text(
+                        AppLocalizations.of(context).translate('please_login')),
+                    CupertinoButton(
+                      child: Text(
+                        AppLocalizations.of(context).translate('log_in'),
+                      ),
+                      onPressed: () =>
+                          Navigator.pushNamed(context, AuthScreen.routeName),
+                    )
+                  ]),
                 );
               } else {
                 return Consumer<ProfileProvider>(

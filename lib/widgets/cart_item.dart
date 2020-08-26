@@ -6,12 +6,12 @@ import 'package:provider/provider.dart';
 import '../providers/cart.dart';
 
 class CartItemWidget extends StatelessWidget {
-  Cart _cart;
+  CartItem _cart;
   CartItemWidget(this._cart);
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: ValueKey(_cart.id),
+      key: ValueKey(_cart.productId),
       background: Container(
         color: Theme.of(context).errorColor,
         child: Icon(

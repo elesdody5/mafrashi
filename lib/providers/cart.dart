@@ -6,23 +6,33 @@ class CartProvider with ChangeNotifier {
   ProductRepository _productRepository;
 
   CartProvider(this._productRepository);
+  Cart _cart;
 
-  List<Cart> _items = [];
+  Cart get cart => _cart;
 
-  List<Cart> get items {
-    return [..._items];
+  List<CartItem> get items {
+    if (_cart == null) return [];
+    return [..._cart.cartItems] ?? [];
   }
 
   int get itemCount {
-    return _items.length;
+    return items.length;
   }
 
-  double get totalAmount {
-    var total = 0.0;
-    _items.forEach((cartItem) {
-      total += double.parse(cartItem.price) * cartItem.quantity;
-    });
-    return total;
+  String get subTotal {
+    return _cart.formattedSubTotal;
+  }
+
+  String get totalAfterDiscount {
+    return _cart.formattedGrandTotal;
+  }
+
+  String get discount {
+    return _cart.formattedDiscount;
+  }
+
+  String get tax {
+    return _cart.formattedTax;
   }
 
   Future<bool> addItem(int productId, int quantity, int colorId, int sizeId,
@@ -31,7 +41,8 @@ class CartProvider with ChangeNotifier {
       bool added = await _productRepository.addToCart(
           productId, quantity, colorId, sizeId, variantId);
       if (added) {
-        _items.add(Cart());
+        // to just update badge in home screen
+        _cart.cartItems.add(CartItem());
         notifyListeners();
       }
       return true;
@@ -48,16 +59,17 @@ class CartProvider with ChangeNotifier {
   void removeItem(int productId) async {
     print(productId);
     bool result = await _productRepository.removeFromCart(productId);
-    if (result) _items.removeWhere((cart) => cart.productId == productId);
+    if (result)
+      _cart.cartItems.removeWhere((cart) => cart.productId == productId);
     notifyListeners();
   }
 
   void removeSingleItem(int productId) {
-    if (!_items.contains(productId)) {
+    if (!_cart.cartItems.contains(productId)) {
       return;
     }
-    if (_items[productId].quantity > 1) {
-//      _items.update(
+    if (_cart.cartItems[productId].quantity > 1) {
+//      _cart.cartItems.update(
 //          productId,
 //          (existingCartItem) => CartItem(
 //                id: existingCartItem.id,
@@ -66,18 +78,22 @@ class CartProvider with ChangeNotifier {
 //                quantity: existingCartItem.quantity - 1,
 //              ));
     } else {
-      _items.remove(productId);
+      _cart.cartItems.remove(productId);
     }
     notifyListeners();
   }
 
   Future<void> fetchCartItems() async {
-    _items = await _productRepository.fetchCartList();
+    _cart = await _productRepository.fetchCartList();
     notifyListeners();
   }
 
+  Future<String> deleteCoupon() async {
+    return await _productRepository.deleteCoupon();
+  }
+
   void clear() {
-    _items = [];
+    _cart.cartItems = [];
     notifyListeners();
   }
 }

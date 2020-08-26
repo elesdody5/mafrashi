@@ -4,6 +4,7 @@ import 'package:mafrashi/language/app_loacl.dart';
 import 'package:mafrashi/providers/cart.dart';
 import 'package:mafrashi/screens/checkout_screen.dart';
 import 'package:mafrashi/widgets/dialog_style.dart';
+import 'package:mafrashi/widgets/error_widget.dart';
 import 'package:mafrashi/widgets/form_text_field.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -18,7 +19,7 @@ class CartScreen extends StatelessWidget {
     final cart = Provider.of<CartProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Cart'),
+        title: Text(AppLocalizations.of(context).translate('your_cart')),
       ),
       body: FutureBuilder(
           future: cart.fetchCartItems(),
@@ -30,7 +31,7 @@ class CartScreen extends StatelessWidget {
                 // ...
                 // Do error handling stuff
                 return Center(
-                  child: Text('An error occurred!'),
+                  child: ErrorImage(),
                 );
               } else {
                 return Consumer<CartProvider>(
@@ -58,13 +59,13 @@ class CartScreen extends StatelessWidget {
                                 children: <Widget>[
                                   Text(
                                     AppLocalizations.of(context)
-                                        .translate('total'),
+                                        .translate('sub_total'),
                                     style: TextStyle(fontSize: 20),
                                   ),
                                   Spacer(),
                                   Chip(
                                     label: Text(
-                                      '\$${cart.totalAmount.toStringAsFixed(2)}',
+                                      cart.subTotal,
                                       style: TextStyle(
                                         color: Theme.of(context)
                                             .primaryTextTheme
@@ -93,7 +94,7 @@ class CartScreen extends StatelessWidget {
                                   Spacer(),
                                   Chip(
                                     label: Text(
-                                      cart.items[0].formattedTax,
+                                      cart.tax,
                                       style: TextStyle(
                                         color: Theme.of(context)
                                             .primaryTextTheme
@@ -121,7 +122,35 @@ class CartScreen extends StatelessWidget {
                                   Spacer(),
                                   Chip(
                                     label: Text(
-                                      cart.items[0].formattedDiscount,
+                                      cart.discount,
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .primaryTextTheme
+                                            .title
+                                            .color,
+                                      ),
+                                    ),
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    AppLocalizations.of(context)
+                                        .translate('grand_total'),
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  Spacer(),
+                                  Chip(
+                                    label: Text(
+                                      cart.totalAfterDiscount,
                                       style: TextStyle(
                                         color: Theme.of(context)
                                             .primaryTextTheme
@@ -225,17 +254,44 @@ class _couponButtonState extends State<CouponButton> {
     );
   }
 
+  void _deleteCoupon() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String message =
+        await Provider.of<CartProvider>(context, listen: false).deleteCoupon();
+    await Provider.of<CartProvider>(context, listen: false).fetchCartItems();
+    setState(() {
+      _isLoading = false;
+    });
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+        ),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    double discount =
+        double.parse(widget.cart.discount.replaceFirst("SAR ", " "));
+    bool addCoupon = discount > 0 ? false : true;
+    String buttonText = addCoupon
+        ? AppLocalizations.of(context).translate('add_coupon')
+        : AppLocalizations.of(context).translate('delete_coupon');
     // TODO: implement build
     return FlatButton(
       child: _isLoading
           ? CircularProgressIndicator()
           : Text(
-              AppLocalizations.of(context).translate('add_coupon'),
+              buttonText,
+              style: TextStyle(color: Colors.red),
             ),
       onPressed: () {
-        _showCodeDialog();
+        addCoupon ? _showCodeDialog() : _deleteCoupon();
       },
       textColor: Theme.of(context).primaryColor,
     );
@@ -291,7 +347,7 @@ class _OrderButtonState extends State<OrderButton> {
                     .translate('proceed_to_checkout')),
                 Icon(Icons.arrow_forward),
               ]),
-        onPressed: (widget.cart.totalAmount <= 0 || _isLoading)
+        onPressed: (widget.cart.items.length <= 0 || _isLoading)
             ? null
             : () async {
                 Navigator.pushNamed(context, CheckOutScreen.routeName);

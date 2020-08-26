@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mafrashi/data_layer/remote_data/apis/auth_api_urls.dart';
 import 'package:mafrashi/data_layer/remote_data/auth/auth_data_interface.dart';
+import 'package:mafrashi/model/http_exception.dart';
 
 class AuthApiImp implements AuthApi {
   Map<String, String> header = {
@@ -21,7 +21,7 @@ class AuthApiImp implements AuthApi {
           headers: header);
       final responseData = json.decode(response.body);
       if (responseData['error'] != null) {
-        throw HttpException(responseData['error'], uri: Uri.parse(url));
+        throw ApiException(responseData['error']);
       }
       String token = _updateCookie(response);
       return token;
@@ -69,7 +69,7 @@ class AuthApiImp implements AuthApi {
       );
       final responseData = json.decode(response.body);
       if (responseData['error'] != null) {
-        throw HttpException(responseData['error'], uri: Uri.parse(url));
+        throw ApiException(responseData['error']);
       }
       return true;
     } catch (error) {
