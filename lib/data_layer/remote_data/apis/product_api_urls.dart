@@ -17,3 +17,5 @@ const SAVE_ADDRESS = '/checkout/save-address';
 const SAVE_SHIPPING = '/checkout/save-shipping';
 const SAVE_PAYMENT = '/checkout/save-payment';
 const OFFERS = '/offers';
+const MOVE_TO_WISHLIST = "/checkout/cart/move-to-wishlist/";
+const REVIEW = '/reviews/';

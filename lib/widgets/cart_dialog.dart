@@ -16,7 +16,6 @@ class CartDialog extends StatefulWidget {
 }
 
 class _CartDialogState extends State<CartDialog> {
-  bool _isLoading = false;
   ProductColor _currentColor;
 
   ProductVariant _currentVariant;

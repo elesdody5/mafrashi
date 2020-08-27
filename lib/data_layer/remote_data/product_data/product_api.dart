@@ -154,16 +154,17 @@ class ProductApi implements RemoteDataSource {
   Future<Cart> fetchCartList(String token) async {
     var url = BASE_URL + CART_ITEM;
     _addAuthorizationToHeader(token);
+    Cart cart = Cart();
     List<CartItem> cartList = [];
-
+    cart.cartItems = cartList;
     final response = await http.get(url, headers: header);
     final responseData = json.decode(response.body) as Map<String, dynamic>;
     if (responseData == null) {
-      return Cart();
+      return cart;
     }
     final data = responseData['data'];
-    if (data == null) return Cart();
-    Cart cart = Cart.fromJson(data);
+    if (data == null) return cart;
+    cart = Cart.fromJson(data);
     final items = data['items'];
 
     items.forEach((cartJson) {
@@ -342,6 +343,28 @@ class ProductApi implements RemoteDataSource {
       return responseData['message'];
     }
     return null;
+  }
+
+  @override
+  Future<bool> moveFromCartToWishList(String token, int cartItemId) async {
+    var url = BASE_URL + MOVE_TO_WISHLIST + "$cartItemId";
+    _addAuthorizationToHeader(token);
+    final response = await http.get(url, headers: header);
+    if (response.statusCode == 200) return true;
+    return false;
+  }
+
+  @override
+  Future<bool> createProductReview(String token, String productId,
+      String rating, String title, String comment) async {
+    var url = BASE_URL + REVIEW + productId + "/create";
+    _addAuthorizationToHeader(token);
+    final response = await http.post(url,
+        headers: header,
+        body: json
+            .encode({"rating": rating, "title": title, "comment": comment}));
+    if (response.statusCode == 200) return true;
+    return false;
   }
 
   void _addAuthorizationToHeader(String token) {

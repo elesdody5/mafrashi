@@ -6,17 +6,18 @@ class CartProvider with ChangeNotifier {
   ProductRepository _productRepository;
 
   CartProvider(this._productRepository);
+
   Cart _cart;
 
   Cart get cart => _cart;
 
   List<CartItem> get items {
-    if (_cart == null) return [];
-    return [..._cart.cartItems] ?? [];
+    if (_cart == null || _cart.cartItems == null) return [];
+    return [..._cart.cartItems];
   }
 
   int get itemCount {
-    return items.length;
+    return items.length ?? 0;
   }
 
   String get subTotal {
@@ -56,31 +57,12 @@ class CartProvider with ChangeNotifier {
     return await _productRepository.addCoupon(code);
   }
 
-  void removeItem(int productId) async {
-    print(productId);
-    bool result = await _productRepository.removeFromCart(productId);
-    if (result)
-      _cart.cartItems.removeWhere((cart) => cart.productId == productId);
-    notifyListeners();
-  }
-
-  void removeSingleItem(int productId) {
-    if (!_cart.cartItems.contains(productId)) {
-      return;
+  void removeItem(int cartId) async {
+    bool result = await _productRepository.removeFromCart(cartId);
+    if (result) {
+      _cart.cartItems.removeWhere((cart) => cart.id == cartId);
+      notifyListeners();
     }
-    if (_cart.cartItems[productId].quantity > 1) {
-//      _cart.cartItems.update(
-//          productId,
-//          (existingCartItem) => CartItem(
-//                id: existingCartItem.id,
-//                title: existingCartItem.title,
-//                price: existingCartItem.price,
-//                quantity: existingCartItem.quantity - 1,
-//              ));
-    } else {
-      _cart.cartItems.remove(productId);
-    }
-    notifyListeners();
   }
 
   Future<void> fetchCartItems() async {
@@ -95,5 +77,12 @@ class CartProvider with ChangeNotifier {
   void clear() {
     _cart.cartItems = [];
     notifyListeners();
+  }
+
+  Future<bool> moveToWishList(int cartId) async {
+    bool result = await _productRepository.moveFromCartToWishList(cartId);
+    if (result) _cart.cartItems.removeWhere((cart) => cart.id == cartId);
+    notifyListeners();
+    return result;
   }
 }

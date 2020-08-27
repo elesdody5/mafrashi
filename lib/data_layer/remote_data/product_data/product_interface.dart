@@ -26,4 +26,8 @@ abstract class RemoteDataSource {
   Future<List<Product>> fetchOffersAndDiscount(String token);
 
   Future<String> deleteCoupon(String token);
+
+  Future<bool> moveFromCartToWishList(String token, int productId);
+  Future<bool> createProductReview(String token, String productId,
+      String rating, String title, String comment);
 }

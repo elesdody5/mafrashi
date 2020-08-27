@@ -44,10 +44,8 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> fetchWishList() async {
-    if (_wishList.isEmpty) {
-      _wishList = await _productRepository.fetchWishList();
-      notifyListeners();
-    }
+    _wishList = await _productRepository.fetchWishList();
+    notifyListeners();
   }
 
   bool isFavourite(int productId) {
@@ -71,5 +69,11 @@ class ProductsProvider with ChangeNotifier {
   Future<void> fetchOffers() async {
     _productOffers = await _productRepository.fetchOffersAndDiscount();
     notifyListeners();
+  }
+
+  Future<bool> createProductReview(
+      String productId, String rating, String title, String comment) async {
+    return await _productRepository.createProductReview(
+        productId, rating, title, comment);
   }
 }

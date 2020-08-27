@@ -9,7 +9,9 @@ abstract class AuthRepository {
   Future<bool> login(String email, String password);
 
   Future<bool> logout();
+
   Future<bool> tryAutoLogin();
+
   Future<bool> signUp(
       {@required String firstName,
       @required String lastName,
@@ -25,27 +27,47 @@ abstract class AuthRepository {
 
 abstract class Repository {
   Future<List<Product>> fetchProducts();
+
   Future<List<Category>> fetchCategory();
+
   Future<bool> addToWishList(int productId);
+
   Future<List<Product>> fetchWishList();
+
   Future<List<SubCategory>> fetchSubCategories(int categoryId);
+
   Future<List<Product>> fetchProductsFromCategory(String categorySlug);
+
   Future<bool> addToCart(
       int productId, int quantity, int colorId, int sizeId, int variantId);
+
   Future<Cart> fetchCartList();
+
   Future<bool> removeFromCart(int productId);
+
   Future<String> addCoupon(int code);
+
   Future<List<String>> countries();
+
   Future<List<Product>> fetchProductFromSubCategory(
       String categorySlug, String subCategorySlug);
+
   Future<bool> saveAddress(Map<String, dynamic> shippingAddress);
+
   Future<bool> order();
+
   Future<List<Product>> fetchOffersAndDiscount();
+
   Future<String> deleteCoupon();
+
+  Future<bool> moveFromCartToWishList(int cartId);
+  Future<bool> createProductReview(
+      String productId, String rating, String title, String comment);
 }
 
 abstract class ProfileRepository {
   Future<User> fetchUserData();
+
   Future<bool> editProfile(
       {@required String firstName,
       @required String lastName,

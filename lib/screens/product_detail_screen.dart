@@ -6,6 +6,7 @@ import 'package:mafrashi/screens/cart_screen.dart';
 import 'package:mafrashi/widgets/authenticated_widget.dart';
 import 'package:mafrashi/widgets/cart_dialog.dart';
 import 'package:mafrashi/widgets/design_theme.dart';
+import 'package:mafrashi/widgets/rating_dialog.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -18,7 +19,6 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen>
     with TickerProviderStateMixin {
   Product _product;
-  bool _isInit = true;
   bool _isLoading = false;
   bool _isFavourite = false;
 
@@ -240,6 +240,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                                     ],
                                   ),
                                 ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: AuthenticatedWidget(
+                                onTap: () => showDialog(
+                                    context: context,
+                                    builder: (ctx) =>
+                                        RatingDialog(_product.id.toString())),
+                                child: ListTile(
+                                    leading: Icon(
+                                      Icons.message,
+                                    ),
+                                    title: Text(AppLocalizations.of(context)
+                                        .translate('write_review'))),
                               ),
                             ),
                             Expanded(
